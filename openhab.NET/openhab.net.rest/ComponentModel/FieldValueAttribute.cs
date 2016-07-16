@@ -9,5 +9,6 @@ namespace openhab.net.rest.ComponentModel
             Value = value;
         }
         public object Value { get; }
+        public override string ToString() => Value?.ToString();
     }
 }

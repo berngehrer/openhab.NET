@@ -2,7 +2,10 @@
 
 namespace openhab.net.rest
 {
-    internal enum TransferProtocol
+    /// <summary>
+    /// Protocols which are support by openhab
+    /// </summary>
+    public enum HttpProtocol
     {
         [FieldValue("http")]
         HTTP,

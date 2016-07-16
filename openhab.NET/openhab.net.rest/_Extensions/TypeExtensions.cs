@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace openhab.net.rest.Extensions
+namespace openhab.net.rest
 {
     internal static class TypeExtensions
     {

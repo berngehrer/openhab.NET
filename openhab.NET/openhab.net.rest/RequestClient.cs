@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace openhab.net.rest
 {
-    internal sealed class RequestClient
+    internal sealed class RequestClient : IDisposable
     {
-        public async Task<string> GetStringAsync(string url)
+        public async Task<string> GetJson(string url)
         {
             using (var client = new HttpClient())
             {
-               
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 //client.DefaultRequestHeaders.Add("X-Atmosphere-Transport", "long-polling");
                 //client.DefaultRequestHeaders.Add("X-Atmosphere-tracking-id", "1234");
@@ -27,7 +26,10 @@ namespace openhab.net.rest
                     }
                 }
             }
+        }
 
+        public void Dispose()
+        {
         }
     }
 }
