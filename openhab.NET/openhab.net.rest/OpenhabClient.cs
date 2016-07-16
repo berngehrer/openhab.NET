@@ -1,16 +1,11 @@
 ﻿using Newtonsoft.Json;
+using openhab.net.rest.Contracts;
 using openhab.net.rest.JsonEntities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace openhab.net.rest
 {
-    public interface IClient
-    {
-        string BaseAddress { get; }
-    }
-
-
     public class OpenhabClient : IClient
     {
         public OpenhabClient(string host, int port = 8080)

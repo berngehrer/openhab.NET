@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using openhab.net.rest.Contracts;
+using System.Collections.Generic;
 
 namespace openhab.net.rest
 {
