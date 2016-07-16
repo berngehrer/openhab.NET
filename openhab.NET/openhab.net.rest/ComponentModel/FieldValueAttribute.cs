@@ -1,0 +1,13 @@
+﻿using System;
+
+namespace openhab.net.rest.ComponentModel
+{
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    internal class FieldValueAttribute : Attribute
+    {
+        public FieldValueAttribute(object value) {
+            Value = value;
+        }
+        public object Value { get; }
+    }
+}
