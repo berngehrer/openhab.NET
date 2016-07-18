@@ -2,6 +2,11 @@
 //using System.Linq;
 //using System.Threading.Tasks;
 
+//const string url = @"http://192.168.178.69:8080/rest/items";
+//const string url = @"http://192.168.178.69:8080/rest/items/gLight";
+//const string url = @"http://192.168.178.69:8080/rest/items/MQTT_TVLED_POW";
+//const string url = @"http://192.168.178.69:8080/rest/items/MQTT_TVLED_POW/state";
+
 //namespace openhab.net.rest.test
 //{
 //    [TestClass]
