@@ -48,3 +48,20 @@
 
     // History???
     // - Install HABmin
+
+
+
+	//Context!
+            // Message
+            //Channel
+            //Encoding
+            //clientbase
+
+
+
+			items
+			// - As String
+        // - As Date
+        // - As Float
+        // - As Int
+        // - As Bool

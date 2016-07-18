@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace openhab.net.rest
 {
-    internal class EndpointCollection : Dictionary<EndpointType,string>
+    internal class EndpointCollection : Dictionary<RestEndpoint,string>
     {
         public EndpointCollection(IClient client)
         {
-            Add(EndpointType.Sitemaps, $"{client.BaseAddress}/{EndpointType.Sitemaps.GetValue()}");
-            Add(EndpointType.Items,    $"{client.BaseAddress}/{EndpointType.Items.GetValue()}");
+            Add(RestEndpoint.Sitemaps, $"{client.BaseAddress}/{RestEndpoint.Sitemaps.GetValue()}");
+            Add(RestEndpoint.Items,    $"{client.BaseAddress}/{RestEndpoint.Items.GetValue()}");
         }
     }
 }

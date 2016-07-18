@@ -6,11 +6,15 @@ namespace openhab.net.rest
     /// Represents the set of link types.
     /// Result of links when accessing api root.
     /// </summary>
-    public enum EndpointType
+    public enum RestEndpoint
     {
-        [FieldValue("sitemaps")]
+        [FieldValue("/rest/sitemaps")]
         Sitemaps,
-        [FieldValue("items")]
+        [FieldValue("/rest/sitemaps")]
+        Pages,
+        [FieldValue("/rest/items")]
+        Groups,
+        [FieldValue("/rest/items")]
         Items
     }
 }

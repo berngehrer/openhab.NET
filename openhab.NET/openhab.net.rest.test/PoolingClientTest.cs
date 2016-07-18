@@ -9,16 +9,19 @@ namespace openhab.net.rest.test
         [TestMethod, Timeout(TestTimeout.Infinite)]
         public void TestRequestClientPooling()
         {
-            const string url = @"http://192.168.178.69:8080/rest/items";
+            //const string url = @"http://192.168.178.69:8080/rest/items";
             //const string url = @"http://192.168.178.69:8080/rest/items/gLight";
             //const string url = @"http://192.168.178.69:8080/rest/items/MQTT_TVLED_POW";
             //const string url = @"http://192.168.178.69:8080/rest/items/MQTT_TVLED_POW/state";
 
             Task.Run(async () =>
             {
-                using (var client = new RequestClient())
+                var settings = new ClientSettings("192.168.178.69");
+                var message = new MessageHandler(RestEndpoint.Items);
+
+                using (var client = new HttpClientProxy(settings))
                 {
-                    var json = await client.GetJson(url, longPooling: true);
+                    var json = await client.ReadAsString(message);
                     Assert.IsFalse(string.IsNullOrEmpty(json));
                 }
             })
@@ -26,10 +29,6 @@ namespace openhab.net.rest.test
         }
 
 
-        // - As String
-        // - As Date
-        // - As Float
-        // - As Int
-        // - As Bool
+        
     }
 }
