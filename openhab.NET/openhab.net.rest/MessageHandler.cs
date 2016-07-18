@@ -26,6 +26,6 @@ namespace openhab.net.rest
         public HttpMethod Method { get; set; } = HttpMethod.Get;
 
         public string MimeString => $"{MimeType.GetValue()}";
-        public string Address => $"{Endpoint.GetValue()}/{SubPath}";
+        public string RelativeAddress => $"{Endpoint.GetValue()}/{SubPath}";
     }
 }

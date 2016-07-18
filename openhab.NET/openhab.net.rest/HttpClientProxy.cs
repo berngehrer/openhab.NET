@@ -31,8 +31,7 @@ namespace openhab.net.rest
 
         public async Task<string> ReadAsString(MessageHandler message)
         {
-            var targetUrl = new Uri(BaseAddress, message.Address);
-            var request = CreateRequest(message, targetUrl);
+            var request = CreateRequest(message);
 
             Task<HttpResponseMessage> responseTask;
             if (message.CancelToken.HasValue) {
@@ -65,12 +64,13 @@ namespace openhab.net.rest
             return client;
         }
 
-        HttpRequestMessage CreateRequest(MessageHandler message, Uri url)
+        HttpRequestMessage CreateRequest(MessageHandler message)
         {
+            var url = new Uri(BaseAddress, message.RelativeAddress);
             var header = new MediaTypeWithQualityHeaderValue(message.MimeString);
             var request = new HttpRequestMessage(message.Method, url);
-            request.Headers.Accept.Add(header);
 
+            request.Headers.Accept.Add(header);
             if (Pooling.UsePooling) {
                 request.Headers.Add("X-Atmosphere-Transport", "long-polling");
                 request.Headers.Add("X-Atmosphere-tracking-id", Pooling.ToString());
