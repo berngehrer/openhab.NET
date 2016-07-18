@@ -19,9 +19,9 @@ namespace openhab.net.rest.JsonEntities
         ItemType ParseType(JObject obj)
         {
             var key = obj[OpenhabItem.ItemTypeName]?.ToString();
-            if (key != null && TypeStrings.ContainsKey(key))
+            if (key != null && TypePairs.ContainsKey(key))
             {
-                return TypeStrings[key];
+                return TypePairs[key];
             }
             return ItemType.Unknown;
         }
@@ -34,7 +34,7 @@ namespace openhab.net.rest.JsonEntities
         public override bool CanConvert(Type objectType) => objectType == typeof(OpenhabItem);
 
 
-        static ConcurrentDictionary<string, ItemType> TypeStrings =
-            new ConcurrentDictionary<string, ItemType>(FieldValueExtension.ToDictionary<ItemType>());
+        static ConcurrentDictionary<string, ItemType> TypePairs =
+            new ConcurrentDictionary<string, ItemType>(FieldValueExtensions.ToDictionary<ItemType>());
     }
 }

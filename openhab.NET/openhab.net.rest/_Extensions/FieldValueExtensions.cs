@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace openhab.net.rest
 {
-    internal static class FieldValueExtension
+    internal static class FieldValueExtensions
     {
         public static object GetValue(this Enum e) => e.GetAttribute<FieldValueAttribute>()?.Value;
 

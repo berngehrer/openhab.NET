@@ -1,0 +1,50 @@
+﻿ // ==> see "demo" for full item overview !
+
+
+    // Send Command (turn on light)
+    // - POST: http://192.168.100.21:8080/rest/items/MyLight
+    //         (headers    : { "Content-Type": "text/plain" })
+
+    // Send Status (window open)
+    // - PUT: http://192.168.100.21:8080/rest/items/MyLight/state 
+    //        (headers    : { "Content-Type": "text/plain" })
+    // - GET: http://localhost:8080/CMD?Temperature_FF_Office=12.3
+
+    // Get Status
+    // - GET: http://192.168.100.21:8080/rest/items/MyLight/state
+
+
+    // Request root 
+    // - http://localhost:8080/rest
+    // Request sitemap 
+    // - http://localhost:8080/rest/sitemaps
+    // Request items
+    // - http://localhost:8080/rest/items
+    // Request page    
+    // - http://localhost:8080//rest/sitemaps/name/page_id      
+    // server-push
+    // - X-Atmosphere-Transport: websocket|long-polling|streaming
+    // - X-Atmosphere-tracking-id: unique id
+    // - Items & Pages only?
+
+    // Format:
+    // - application/xml
+    // - application/json
+
+    // Security
+    // - http://username:password@host:port/rest
+
+    // Protocol:
+    // - http
+    // - https
+
+    // Access: 
+    // - Sitemap (Feature)
+    // - Groups (Feature)
+    // - All items
+    // - Item
+    // - States (plain)
+    // - Single Page of a sitemap ???? (Feature)
+
+    // History???
+    // - Install HABmin
