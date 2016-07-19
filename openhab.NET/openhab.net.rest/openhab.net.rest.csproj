@@ -35,6 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Channels\PoolingSession.cs" />
+    <Compile Include="ItemModel.cs" />
+    <Compile Include="Items\OpenhabItem.cs" />
+    <Compile Include="Items\NumberItem.cs" />
+    <Compile Include="Items\StringItem.cs" />
     <Compile Include="MessageHandler.cs" />
     <Compile Include="ComponentModel\FieldValueAttribute.cs" />
     <Compile Include="Contracts\IClient.cs" />
@@ -42,15 +46,15 @@
     <Compile Include="JsonEntities\ItemConverter.cs" />
     <Compile Include="OpenhabClient.cs" />
     <Compile Include="ClientSettings.cs" />
-    <Compile Include="_Enums\ItemType.cs" />
+    <Compile Include="Items\ItemType.cs" />
     <Compile Include="_Enums\MIMEType.cs" />
     <Compile Include="_Extensions\AttributeExtensions.cs" />
     <Compile Include="_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Extensions\FieldValueExtensions.cs" />
     <Compile Include="_Extensions\TypeExtensions.cs" />
-    <Compile Include="JsonEntities\OpenhabItem.cs" />
+    <Compile Include="JsonEntities\ItemRoot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="HttpClientProxy.cs" />
+    <Compile Include="Http\HttpClientProxy.cs" />
     <Compile Include="_Enums\RestEndpoint.cs" />
     <Compile Include="_Enums\HttpProtocol.cs" />
   </ItemGroup>

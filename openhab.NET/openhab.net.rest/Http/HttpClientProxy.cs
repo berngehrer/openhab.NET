@@ -5,11 +5,12 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace openhab.net.rest
+namespace openhab.net.rest.Http
 {
     internal sealed class HttpClientProxy : IDisposable
     {
         HttpClient _innerClient;
+        PoolingSession _pooling;
         
         public HttpClientProxy(ClientSettings settings)
             : this(settings, PoolingSession.False)
@@ -18,15 +19,9 @@ namespace openhab.net.rest
 
         public HttpClientProxy(ClientSettings settings, PoolingSession pooling)
         {
-            Pooling = pooling;
-            BaseAddress = new Uri(settings.BaseAddress);
-
+            _pooling = pooling;
             _innerClient = CreateClient(settings);
         }
-
-        
-        public Uri BaseAddress { get; }
-        public PoolingSession Pooling { get; }
         
 
         public async Task<string> ReadAsString(MessageHandler message)
@@ -58,7 +53,8 @@ namespace openhab.net.rest
             };
 
             var client = new HttpClient(httpHandler, true);
-            if (Pooling.UsePooling) {
+            client.BaseAddress = new Uri(settings.BaseAddress);
+            if (_pooling.UsePooling) {
                 client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
             }
             return client;
@@ -66,14 +62,13 @@ namespace openhab.net.rest
 
         HttpRequestMessage CreateRequest(MessageHandler message)
         {
-            var url = new Uri(BaseAddress, message.RelativeAddress);
             var header = new MediaTypeWithQualityHeaderValue(message.MimeString);
-            var request = new HttpRequestMessage(message.Method, url);
+            var request = new HttpRequestMessage(message.Method, message.RelativeAddress);
 
             request.Headers.Accept.Add(header);
-            if (Pooling.UsePooling) {
+            if (_pooling.UsePooling) {
                 request.Headers.Add("X-Atmosphere-Transport", "long-polling");
-                request.Headers.Add("X-Atmosphere-tracking-id", Pooling.ToString());
+                request.Headers.Add("X-Atmosphere-tracking-id", _pooling.ToString());
             }
             return request;
         }

@@ -1,6 +1,6 @@
 ﻿using openhab.net.rest.ComponentModel;
 
-namespace openhab.net.rest
+namespace openhab.net.rest.Items
 {
     /// <summary>
     /// Possible results of item types from request

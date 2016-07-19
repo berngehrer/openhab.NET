@@ -7,11 +7,11 @@ namespace openhab.net.rest.JsonEntities
     public class ItemRootObject
     {
         [JsonProperty("item")]
-        public List<OpenhabItem> Items { get; set; }
+        public List<ItemObject> Items { get; set; }
     }
 
     [JsonConverter(typeof(ItemConverter))]
-    public class OpenhabItem
+    public class ItemObject
     {
         public const string ItemTypeName = "type";
 

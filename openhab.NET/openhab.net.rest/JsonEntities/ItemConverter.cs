@@ -9,7 +9,7 @@ namespace openhab.net.rest.JsonEntities
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var item = new OpenhabItem();
+            var item = new ItemObject();
             var jObject = JObject.Load(reader);
             serializer.Populate(jObject.CreateReader(), item);
             item.ItemType = ParseType(jObject);
@@ -18,7 +18,7 @@ namespace openhab.net.rest.JsonEntities
 
         ItemType ParseType(JObject obj)
         {
-            var key = obj[OpenhabItem.ItemTypeName]?.ToString();
+            var key = obj[ItemObject.ItemTypeName]?.ToString();
             if (key != null && TypePairs.ContainsKey(key))
             {
                 return TypePairs[key];
@@ -31,7 +31,7 @@ namespace openhab.net.rest.JsonEntities
             throw new NotImplementedException();
         }
 
-        public override bool CanConvert(Type objectType) => objectType == typeof(OpenhabItem);
+        public override bool CanConvert(Type objectType) => objectType == typeof(ItemObject);
 
 
         static ConcurrentDictionary<string, ItemType> TypePairs =
