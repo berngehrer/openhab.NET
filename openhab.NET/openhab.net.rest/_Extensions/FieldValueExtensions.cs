@@ -1,4 +1,4 @@
-﻿using openhab.net.rest.ComponentModel;
+﻿using openhab.net.rest.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

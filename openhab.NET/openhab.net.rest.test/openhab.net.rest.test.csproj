@@ -51,8 +51,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ClientTests.cs" />
-    <Compile Include="PoolingClientTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValueParserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\openhab.net.rest\openhab.net.rest.csproj">

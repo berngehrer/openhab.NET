@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using openhab.net.rest.Http;
+using System.Net;
 
 namespace openhab.net.rest
 {

@@ -1,44 +1,38 @@
-﻿//using Newtonsoft.Json;
-//using openhab.net.rest.Contracts;
-//using openhab.net.rest.JsonEntities;
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
+﻿using openhab.net.rest.Core;
+using openhab.net.rest.Http;
+using System;
+using System.Threading;
 
-//namespace openhab.net.rest
-//{
-//    public class OpenhabClient : IClient
-//    {
-//        public OpenhabClient(string host, int port = 8080)
-//            : this(new ClientSettings(host, port))
-//        { 
-//        }
+namespace openhab.net.rest
+{
+    public abstract class OpenhabClient<T> : IDisposable where T : IOpenhabElement
+    {
+        protected OpenhabClient(string host, int port, bool pooling = false)
+            : this(new ClientSettings(host, port), pooling)
+        {
+        }
 
-//        public OpenhabClient(ClientSettings handler)
-//        {
-//            Handler = handler;
-//            Endpoints = new EndpointCollection(this);
-//        }
+        protected OpenhabClient(ClientSettings settings, bool pooling = false)
+        {
+            Settings = settings;
 
-//        EndpointCollection Endpoints { get; }
+            var poolingClass = PoolingSession.False;
+            if (pooling) {
+                poolingClass = new PoolingSession(IdProvider.GetNext());
+            }
+            _proxy = new HttpClientProxy(settings, poolingClass);
+        }
 
-//        public ClientSettings Handler { get; }
+        public ClientSettings Settings { get; }
 
-//        string _baseAddress;
-//        public string BaseAddress => _baseAddress ?? (_baseAddress = Handler?.BuildUp());
+        internal CancellationToken? CancelToken { get; }
 
-
-//        public async Task<IEnumerable<OpenhabItem>> GetResultAsync(RestEndpoint endpoint)
-//        {
-//            if (endpoint == RestEndpoint.Sitemaps) {
-//                throw new System.NotImplementedException();
-//            }
-
-//            using (var client = new RequestClient())
-//            {
-//                var json = await client.GetJson(Endpoints[endpoint]);
-//                var result = JsonConvert.DeserializeObject<ItemRootObject>(json);
-//                return result.Items;
-//            }
-//        }
-//    }
-//}
+        HttpClientProxy _proxy;
+        internal HttpClientProxy RestProxy => _proxy;
+        
+        public void Dispose()
+        {
+            _proxy.Dispose();
+        }
+    }
+}

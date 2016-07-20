@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
+using openhab.net.rest.Items;
 using System.Collections.Generic;
 
-namespace openhab.net.rest.JsonEntities
+namespace openhab.net.rest.Json
 {
     [JsonObject]
     public class ItemRootObject

@@ -1,4 +1,4 @@
-﻿using openhab.net.rest.JsonEntities;
+﻿using openhab.net.rest.Json;
 
 namespace openhab.net.rest.Items
 {

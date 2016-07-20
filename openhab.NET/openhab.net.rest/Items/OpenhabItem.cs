@@ -1,10 +1,10 @@
-﻿using openhab.net.rest.JsonEntities;
+﻿using openhab.net.rest.Json;
 using System;
 using System.Linq;
 
 namespace openhab.net.rest.Items
 {
-    public abstract class OpenhabItem : IEquatable<OpenhabItem>
+    public abstract class OpenhabItem : IOpenhabElement, IEquatable<OpenhabItem>
     {
         string[] _notInitialized = { "", "Undefined", "Uninitialized", };
 
@@ -23,44 +23,11 @@ namespace openhab.net.rest.Items
 
         public bool IsInitialized => !_notInitialized.Contains(Value);
         
-
-        protected bool TryParseValue<T>(out T obj)
-        {
-            obj = default(T);
-
-            if (typeof(T).Is<int>())
-            {
-                int i;
-                if (int.TryParse(Value, out i)) {
-                    obj = (T)(object)i;
-                    return true;
-                }
-            }
-            if (typeof(T).Is<float>())
-            {
-                float f;
-                if (float.TryParse(Value, out f)) {
-                    obj = (T)(object)f;
-                    return true;
-                }
-            }
-            if (typeof(T).Is<DateTime>())
-            {
-                DateTime dt;
-                if (DateTime.TryParse(Value, out dt)) {
-                    obj = (T)(object)dt;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
         public static bool operator ==(OpenhabItem a, OpenhabItem b) => a.Name == b.Name;
 
         public static bool operator !=(OpenhabItem a, OpenhabItem b) => a.Name != b.Name;
-        
-        public bool Equals(OpenhabItem other) => Name == other?.Name;
+
+        public bool Equals(OpenhabItem other) => this == other;
 
         public override int GetHashCode() => Name.GetHashCode();
 

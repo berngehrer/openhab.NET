@@ -1,19 +1,15 @@
-﻿using openhab.net.rest.ComponentModel;
+﻿using openhab.net.rest.Core;
 
-namespace openhab.net.rest
+namespace openhab.net.rest.Http
 {
     /// <summary>
     /// Represents the set of link types.
     /// Result of links when accessing api root.
     /// </summary>
-    public enum RestEndpoint
+    internal enum SiteCollection
     {
         [FieldValue("/rest/sitemaps")]
         Sitemaps,
-        [FieldValue("/rest/sitemaps")]
-        Pages,
-        [FieldValue("/rest/items")]
-        Groups,
         [FieldValue("/rest/items")]
         Items
     }

@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using openhab.net.rest.Items;
 using System;
 using System.Collections.Concurrent;
 
-namespace openhab.net.rest.JsonEntities
+namespace openhab.net.rest.Json
 {
     internal class ItemConverter : JsonConverter
     {

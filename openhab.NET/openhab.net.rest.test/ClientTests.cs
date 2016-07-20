@@ -1,69 +1,92 @@
-﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using System.Linq;
-//using System.Threading.Tasks;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using openhab.net.rest.Http;
+using System.Linq;
+using System.Threading.Tasks;
 
-//const string url = @"http://192.168.178.69:8080/rest/items";
-//const string url = @"http://192.168.178.69:8080/rest/items/gLight";
-//const string url = @"http://192.168.178.69:8080/rest/items/MQTT_TVLED_POW";
-//const string url = @"http://192.168.178.69:8080/rest/items/MQTT_TVLED_POW/state";
+namespace openhab.net.rest.test
+{
+    [TestClass]
+    public class ClientTests
+    {
+        const string TestItem = "MQTT_TVLED_POW";
 
-//namespace openhab.net.rest.test
-//{
-//    [TestClass]
-//    public class ClientTests
-//    {
-//        [TestMethod]
-//        public void TestOpenhabClientHandler()
-//        {
-//            int port = 8080;
-//            string host = "localhost";
-//            string user = "username";
-//            string pwd = "password";            
+        public ClientTests()
+        {
+            int port = 8080;
+            string host = "192.168.178.69";
+            Settings = new ClientSettings(host, port);
+        }
 
-//            var expected = $"http://{host}:{port}{ClientSettings.ApiPath}";
-//            var handler = new ClientSettings(host, port);
-//            Assert.AreEqual(handler.BuildUp(), expected);
+        ClientSettings Settings { get; }
 
-//            expected = $"https://{host}:{port}{ClientSettings.ApiPath}";
-//            handler.Protocol = HttpProtocol.HTTPS;
-//            Assert.AreEqual(handler.BuildUp(), expected);
 
-//            expected = $"https://{user}:{pwd}@{host}:{port}{ClientSettings.ApiPath}";
-//            handler.Credential = new System.Net.NetworkCredential(user, pwd);
-//            Assert.AreEqual(handler.BuildUp(), expected);
-//        }
+        [TestMethod]
+        public void TestOpenhabItemClient()
+        {
+            Task.Run(async () =>
+            {
+                using (var client = new OpenhabItemClient(Settings))
+                {
+                    var items = await client.GetAllAsync();
+                    Assert.IsNotNull(items);
+                    Assert.IsTrue(items.Any());
+                }
+            })
+            .GetAwaiter().GetResult();
+        }
 
-//        [TestMethod]
-//        public void TestOpenhabClient()
-//        {
-//            string host = "192.168.178.69";
+        [TestMethod]
+        public void TestHttpClientProxy()
+        {
+            Task.Run(async () =>
+            {
+                var message = new MessageHandler(SiteCollection.Items);
 
-//            var client = new OpenhabClient(host);
-//            Task.Run(async () =>
-//            {
-//                var items = await client.GetResultAsync(RestEndpoint.Items);
-//                Assert.IsNotNull(items);
-//                Assert.IsTrue(items.Any());
-//            })
-//            .GetAwaiter().GetResult();
-//        }
+                using (var client = new HttpClientProxy(Settings))
+                {
+                    var json = await client.ReadAsString(message);
+                    Assert.IsFalse(string.IsNullOrEmpty(json));
+                }
+            })
+            .GetAwaiter().GetResult();
+        }
 
-//        [TestMethod]
-//        public void TestRequestClient()
-//        {
-//            int port = 8080;
-//            string host = "192.168.178.69";
-//            var handler = new ClientSettings(host, port);
+        [TestMethod]
+        public void TestHttpClientProxyPlain()
+        {
+            Task.Run(async () =>
+            {
+                var message = new MessageHandler
+                {
+                    Collection = SiteCollection.Items,
+                    MimeType = MIMEType.PlainText,
+                    RelativePath = $"{TestItem}/state"
+                };
 
-//            Task.Run(async () =>
-//            {
-//                using (var client = new RequestClient())
-//                {
-//                    var json = await client.GetJson(handler.BuildUp());
-//                    Assert.IsFalse(string.IsNullOrEmpty(json));
-//                }
-//            })
-//            .GetAwaiter().GetResult();
-//        }
-//    }
-//}
+                using (var client = new HttpClientProxy(Settings))
+                {
+                    var json = await client.ReadAsString(message);
+                    Assert.IsFalse(string.IsNullOrEmpty(json));
+                }
+            })
+            .GetAwaiter().GetResult();
+        }
+
+        //[TestMethod, Timeout(TestTimeout.Infinite)]
+        //public void TestHttpClientProxyPooling()
+        //{
+        //    Task.Run(async () =>
+        //    {
+        //        var pooling = new PoolingSession(1234);
+        //        var message = new MessageHandler(SiteCollection.Items, relativePath: TestItem);
+
+        //        using (var client = new HttpClientProxy(Settings, pooling))
+        //        {
+        //            var json = await client.ReadAsString(message);
+        //            Assert.IsFalse(string.IsNullOrEmpty(json));
+        //        }
+        //    })
+        //    .GetAwaiter().GetResult();
+        //}
+    }
+}

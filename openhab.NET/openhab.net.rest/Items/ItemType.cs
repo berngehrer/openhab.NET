@@ -1,4 +1,4 @@
-﻿using openhab.net.rest.ComponentModel;
+﻿using openhab.net.rest.Core;
 
 namespace openhab.net.rest.Items
 {

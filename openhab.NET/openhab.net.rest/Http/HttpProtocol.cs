@@ -1,6 +1,6 @@
-﻿using openhab.net.rest.ComponentModel;
+﻿using openhab.net.rest.Core;
 
-namespace openhab.net.rest
+namespace openhab.net.rest.Http
 {
     /// <summary>
     /// Protocols which are support by openhab

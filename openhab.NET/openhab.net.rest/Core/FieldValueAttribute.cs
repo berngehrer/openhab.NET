@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace openhab.net.rest.ComponentModel
+namespace openhab.net.rest.Core
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     internal class FieldValueAttribute : Attribute
