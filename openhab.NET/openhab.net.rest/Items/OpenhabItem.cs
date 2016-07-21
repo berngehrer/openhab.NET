@@ -8,7 +8,7 @@ namespace openhab.net.rest.Items
     {
         string[] _notInitialized = { "", "Undefined", "Uninitialized", };
 
-        protected OpenhabItem(ItemObject original)
+        internal OpenhabItem(ItemObject original)
         {
             Name = original.Name;
             Value = original.State;
@@ -22,10 +22,16 @@ namespace openhab.net.rest.Items
         public string Value { get; protected set; }
 
         public bool IsInitialized => !_notInitialized.Contains(Value);
-        
-        public static bool operator ==(OpenhabItem a, OpenhabItem b) => a.Name == b.Name;
 
-        public static bool operator !=(OpenhabItem a, OpenhabItem b) => a.Name != b.Name;
+        public static bool operator ==(OpenhabItem a, OpenhabItem b)
+        {
+            return a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public static bool operator !=(OpenhabItem a, OpenhabItem b)
+        {
+            return !a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
+        }
 
         public bool Equals(OpenhabItem other) => this == other;
 

@@ -4,7 +4,7 @@ namespace openhab.net.rest.Items
 {
     public class SwitchItem : OpenhabItem
     {
-        public SwitchItem(ItemObject original) : base(original)
+        internal SwitchItem(ItemObject original) : base(original)
         {
         }
 

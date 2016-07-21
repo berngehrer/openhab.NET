@@ -7,7 +7,7 @@ namespace openhab.net.rest.Items
         const string OpenState = "open";
         const string ClosedState = "close";
 
-        public ContactItem(ItemObject original) : base(original)
+        internal ContactItem(ItemObject original) : base(original)
         {
             if (IsInitialized) {
                 _value = StringToValue();

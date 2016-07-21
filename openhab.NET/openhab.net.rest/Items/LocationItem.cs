@@ -4,7 +4,7 @@ namespace openhab.net.rest.Items
 {
     public class LocationItem : OpenhabItem
     {
-        public LocationItem(ItemObject original) : base(original)
+        internal LocationItem(ItemObject original) : base(original)
         {
         }
     }

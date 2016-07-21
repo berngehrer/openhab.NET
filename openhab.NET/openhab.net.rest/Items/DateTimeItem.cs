@@ -6,7 +6,7 @@ namespace openhab.net.rest.Items
 {
     public class DateTimeItem : OpenhabItem
     {
-        public DateTimeItem(ItemObject original) : base(original)
+        internal DateTimeItem(ItemObject original) : base(original)
         {
             if (IsInitialized) {
                 ValueParser.TryParse(base.Value, out _value);

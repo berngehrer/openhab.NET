@@ -15,7 +15,7 @@ namespace openhab.net.rest
             else {
                 var collection = source as ICollection<T>;
                 if (collection != null) {
-                    target?.ForEach(x => collection.Add(x));
+                    target?.ForEach(collection.Add);
                 }
             }
         }

@@ -5,14 +5,14 @@ using System.Collections.Generic;
 namespace openhab.net.rest.Json
 {
     [JsonObject]
-    public class ItemRootObject
+    internal class ItemRootObject
     {
         [JsonProperty("item")]
         public List<ItemObject> Items { get; set; }
     }
 
     [JsonConverter(typeof(ItemConverter))]
-    public class ItemObject
+    internal class ItemObject
     {
         public const string ItemTypeName = "type";
 

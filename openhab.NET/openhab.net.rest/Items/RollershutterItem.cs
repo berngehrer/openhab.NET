@@ -4,7 +4,7 @@ namespace openhab.net.rest.Items
 {
     public class RollershutterItem : OpenhabItem
     {
-        public RollershutterItem(ItemObject original) : base(original)
+        internal RollershutterItem(ItemObject original) : base(original)
         {
         }
     }

@@ -39,6 +39,7 @@
     <Compile Include="Core\ValueParser.cs" />
     <Compile Include="IOpenhabClient.cs" />
     <Compile Include="IOpenhabElement.cs" />
+    <Compile Include="Json\SitemapRoot.cs" />
     <Compile Include="OpenhabClient.cs" />
     <Compile Include="OpenhabItemClient.cs" />
     <Compile Include="Items\CallItem.cs" />
@@ -59,6 +60,8 @@
     <Compile Include="Http\ClientSettings.cs" />
     <Compile Include="Items\ItemType.cs" />
     <Compile Include="Http\MIMEType.cs" />
+    <Compile Include="OpenhabSitemapClient.cs" />
+    <Compile Include="Sitemaps\OpenhabSitemap.cs" />
     <Compile Include="_Extensions\AttributeExtensions.cs" />
     <Compile Include="_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Extensions\FieldValueExtensions.cs" />

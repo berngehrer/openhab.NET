@@ -11,7 +11,7 @@ namespace openhab.net.rest
     public class OpenhabItemClient : OpenhabClient<OpenhabItem>, IOpenhabClient<OpenhabItem>
     {
         public OpenhabItemClient(string host, int port = 8080, bool pooling = false)
-            : base(host, port, pooling)
+            : base(new ClientSettings(host, port), pooling)
         {
         }
 
@@ -31,7 +31,8 @@ namespace openhab.net.rest
             };
 
             var json = await RestProxy.ReadAsString(message);
-            return ConvertToItems(json).FirstOrDefault();
+            var item = JsonConvert.DeserializeObject<ItemObject>(json);
+            return ConvertItem(item);
         }
 
         public async Task<IEnumerable<OpenhabItem>> GetAllAsync()
@@ -43,53 +44,39 @@ namespace openhab.net.rest
             };
             
             var json = await RestProxy.ReadAsString(message);
-            return ConvertToItems(json);
+            var result = JsonConvert.DeserializeObject<ItemRootObject>(json);
+            return result.Items.Select(ConvertItem);
         }
 
 
-        protected IEnumerable<OpenhabItem> ConvertToItems(string json)
+        internal OpenhabItem ConvertItem(ItemObject item)
         {
-            var result = JsonConvert.DeserializeObject<ItemRootObject>(json);
-
-            foreach (var item in result.Items)
+            switch (item.ItemType)
             {
-                switch (item.ItemType)
-                {
-                    case ItemType.Call:
-                        yield return new CallItem(item);
-                        break;
-                    case ItemType.Color:
-                        yield return new ColorItem(item);
-                        break;
-                    case ItemType.Contact:
-                        yield return new ContactItem(item);
-                        break;
-                    case ItemType.DateTime:
-                        yield return new DateTimeItem(item);
-                        break;
-                    case ItemType.Dimmer:
-                        yield return new DimmerItem(item);
-                        break;
-                    case ItemType.Group:
-                        yield return new GroupItem(item);
-                        break;
-                    case ItemType.Location:
-                        yield return new LocationItem(item);
-                        break;
-                    case ItemType.Number:
-                        yield return new NumberItem(item);
-                        break;
-                    case ItemType.Rollershutter:
-                        yield return new RollershutterItem(item);
-                        break;
-                    case ItemType.String:
-                        yield return new StringItem(item);
-                        break;
-                    case ItemType.Switch:
-                        yield return new SwitchItem(item);
-                        break;
-                }
+                case ItemType.Call:
+                    return new CallItem(item);
+                case ItemType.Color:
+                    return new ColorItem(item);
+                case ItemType.Contact:
+                    return new ContactItem(item);
+                case ItemType.DateTime:
+                    return new DateTimeItem(item);
+                case ItemType.Dimmer:
+                    return new DimmerItem(item);
+                case ItemType.Group:
+                    return new GroupItem(item);
+                case ItemType.Location:
+                    return new LocationItem(item);
+                case ItemType.Number:
+                    return new NumberItem(item);
+                case ItemType.Rollershutter:
+                    return new RollershutterItem(item);
+                case ItemType.String:
+                    return new StringItem(item);
+                case ItemType.Switch:
+                    return new SwitchItem(item);
             }
+            return null;
         }
     }
 }

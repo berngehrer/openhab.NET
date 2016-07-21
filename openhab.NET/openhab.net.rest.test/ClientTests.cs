@@ -8,6 +8,7 @@ namespace openhab.net.rest.test
     [TestClass]
     public class ClientTests
     {
+        const string TestSitemap = "default";
         const string TestItem = "MQTT_TVLED_POW";
 
         public ClientTests()
@@ -30,6 +31,49 @@ namespace openhab.net.rest.test
                     var items = await client.GetAllAsync();
                     Assert.IsNotNull(items);
                     Assert.IsTrue(items.Any());
+                }
+            })
+            .GetAwaiter().GetResult();
+        }
+         
+        [TestMethod]
+        public void TestOpenhabItemSingleClient()
+        {
+            Task.Run(async () =>
+            {
+                using (var client = new OpenhabItemClient(Settings))
+                {
+                    var item = await client.GetByNameAsync(TestItem);
+                    Assert.IsNotNull(item);
+                }
+            })
+            .GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
+        public void TestOpenhabSitemapClient()
+        {
+            Task.Run(async () =>
+            {
+                using (var client = new OpenhabSitemapClient(Settings))
+                {
+                    var sitemaps = await client.GetAllAsync();
+                    Assert.IsNotNull(sitemaps);
+                    Assert.IsTrue(sitemaps.Any());
+                }
+            })
+            .GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
+        public void TestOpenhabSitemapSingleClient()
+        {
+            Task.Run(async () =>
+            {
+                using (var client = new OpenhabSitemapClient(Settings))
+                {
+                    var sitemap = await client.GetByNameAsync(TestSitemap);
+                    Assert.IsNotNull(sitemap);
                 }
             })
             .GetAwaiter().GetResult();

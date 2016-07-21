@@ -4,7 +4,7 @@ namespace openhab.net.rest.Items
 {
     public class ColorItem : OpenhabItem
     {
-        public ColorItem(ItemObject original) : base(original)
+        internal ColorItem(ItemObject original) : base(original)
         {
         }
     }

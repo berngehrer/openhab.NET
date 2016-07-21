@@ -7,11 +7,6 @@ namespace openhab.net.rest
 {
     public abstract class OpenhabClient<T> : IDisposable where T : IOpenhabElement
     {
-        protected OpenhabClient(string host, int port, bool pooling = false)
-            : this(new ClientSettings(host, port), pooling)
-        {
-        }
-
         protected OpenhabClient(ClientSettings settings, bool pooling = false)
         {
             Settings = settings;
@@ -30,6 +25,7 @@ namespace openhab.net.rest
         HttpClientProxy _proxy;
         internal HttpClientProxy RestProxy => _proxy;
         
+
         public void Dispose()
         {
             _proxy.Dispose();
