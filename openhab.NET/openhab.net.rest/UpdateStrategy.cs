@@ -24,12 +24,7 @@ namespace openhab.net.rest
         /// Default is false
         /// </summary>
         public bool Realtime { get; } = false;
-
-        /// <summary>
-        /// Default is true
-        /// </summary>
-        public bool AutoCommit { get; set; } = true;
-
+        
         /// <summary>
         /// Default is Zero (Off)
         /// </summary>

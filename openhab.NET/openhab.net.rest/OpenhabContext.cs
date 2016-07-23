@@ -1,5 +1,4 @@
-﻿using openhab.net.rest.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,58 +7,32 @@ namespace openhab.net.rest
 {
     public abstract class OpenhabContext<T> : IDisposable where T : IOpenhabElement
     {
-        // TODO
+        OpenhabClient _connection;
         ObjectStateManager<T> _objectManager;
-        
+
         public event ContextRefreshedHandler<T> Refreshed;
         
 
         protected OpenhabContext(ClientSettings settings, UpdateStrategy strategy)
         {
+            Strategy = strategy;
+
             _connection = new OpenhabClient(settings);
-            _objectManager = CreateStateManager(strategy ?? UpdateStrategy.Default);
+            _objectManager = new ObjectStateManager<T>(this);
         }
-
-        ObjectStateManager<T> CreateStateManager(UpdateStrategy strategy)
-        {
-            OpenhabClient client;
-            ClientBackgroundWorker worker = null;
-
-            // Timed update
-            if (strategy.Interval != TimeSpan.Zero) {
-                client = new OpenhabClient(_connection.Settings);
-            }
-            // Permanent update by server push
-            else if (strategy.Realtime) {
-                client = new OpenhabClient(_connection.Settings, pooling: true);
-            }
-            // No background update
-            else client = null;
-
-            if (client != null) {
-                worker = new ClientBackgroundWorker(client, strategy.Interval.Milliseconds);
-            }
-            return new ObjectStateManager<T>(Collection, worker);
-        }
-
-        OpenhabClient _connection;
+        
         internal OpenhabClient Connection => _connection;
+        //internal ObjectStateManager<T> ObjectManager => _objectManager;
+        internal UpdateStrategy Strategy { get; private set; }
         internal CancellationTokenSource CancelSource { get; set; }
         internal abstract Http.SiteCollection Collection { get; }
 
-        public abstract Task<IEnumerable<T>> GetAll();
-        public abstract Task<T> GetByName(string name);
-        
-        public Task<bool> Commit()
+
+        internal void FireRefreshed(IOpenhabElement element)
         {
-            // TODO
-            return Connection.SendCommand();
-        }
-                
-        // Replace?
-        protected void FireRefreshed(T element)
-        {
-            Refreshed?.Invoke(this, new ContextRefreshedEventArgs<T>(element));
+            if (element?.GetType().Is<T>() ?? false) {
+                Refreshed?.Invoke(this, new ContextRefreshedEventArgs<T>((T)element));
+            }
         }
 
         public void Cancel()
@@ -76,5 +49,10 @@ namespace openhab.net.rest
             _objectManager.Dispose();
             _connection.Dispose();
         }
+
+        // TODO: bessere Lösung
+        internal abstract Task<IEnumerable<T>> GetAll(OpenhabClient client, Http.MessageHandler message);
+        public abstract Task<IEnumerable<T>> GetAll();
+        public abstract Task<T> GetByName(string name);
     }
 }

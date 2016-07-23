@@ -1,9 +1,11 @@
-﻿
+﻿using System.ComponentModel;
+
 namespace openhab.net.rest
 {
-    public interface IOpenhabElement
+    public interface IOpenhabElement : INotifyPropertyChanged
     {
         string Name { get; }
-        string Value { get; }
+        bool HasChanged { get; }
+        void Reset();
     }
 }

@@ -34,10 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ContextClientFactory.cs" />
+    <Compile Include="Core\IFactory.cs" />
     <Compile Include="ContextRefreshedEventArgs.cs" />
     <Compile Include="Core\IdProvider.cs" />
     <Compile Include="Http\PoolingSession.cs" />
     <Compile Include="Core\ValueParser.cs" />
+    <Compile Include="DataSource\IDataSource.cs" />
     <Compile Include="IOpenhabElement.cs" />
     <Compile Include="ItemContext.cs" />
     <Compile Include="ObjectStateManager.cs" />
@@ -69,6 +72,7 @@
     <Compile Include="_Extensions\AttributeExtensions.cs" />
     <Compile Include="_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Extensions\FieldValueExtensions.cs" />
+    <Compile Include="_Extensions\TaskExtensions.cs" />
     <Compile Include="_Extensions\TypeExtensions.cs" />
     <Compile Include="Json\ItemRoot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

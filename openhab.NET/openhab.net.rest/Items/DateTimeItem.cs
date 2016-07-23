@@ -20,7 +20,7 @@ namespace openhab.net.rest.Items
             set
             {
                 _value = value;
-                base.Value = value.ToString();
+                UpdateValue(value.ToString());
             }
         }
     }

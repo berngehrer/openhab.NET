@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace openhab.net.rest
 {
-    public static class EnumerableExtensions
+    internal static class EnumerableExtensions
     {
         public static void AddRange<T>(this IEnumerable<T> source, IEnumerable<T> target)
         {

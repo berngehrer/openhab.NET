@@ -13,6 +13,7 @@ namespace openhab.net.rest.Http
             Collection = collection;
         }
 
+        public string Content { get; set; }
         public string RelativePath { get; set; }
         public SiteCollection Collection { get; set; }
         public CancellationToken? CancelToken { get; set; }
@@ -21,5 +22,12 @@ namespace openhab.net.rest.Http
 
         public string MimeString => $"{MimeType.GetValue()}";
         public string RelativeAddress => $"{Collection.GetValue()}/{RelativePath}";
+
+        internal CancellationToken GetToken()
+        {
+            return (CancelToken.HasValue)
+                  ? CancelToken.Value
+                  : CancellationToken.None;
+        }
     }
 }

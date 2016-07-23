@@ -1,5 +1,6 @@
 ﻿using openhab.net.rest.Json;
 using System;
+using System.ComponentModel;
 
 namespace openhab.net.rest.Sitemaps
 {
@@ -24,6 +25,14 @@ namespace openhab.net.rest.Sitemaps
             }
         }
 
+        public bool HasChanged
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public static bool operator ==(OpenhabSitemap a, OpenhabSitemap b)
         {
             return a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
@@ -33,6 +42,8 @@ namespace openhab.net.rest.Sitemaps
         {
             return !a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public bool Equals(OpenhabSitemap other) => this == other;
 
@@ -46,6 +57,11 @@ namespace openhab.net.rest.Sitemaps
             if (other != null)
                 return Equals(other);
             return base.Equals(obj);
+        }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
         }
     }
 }

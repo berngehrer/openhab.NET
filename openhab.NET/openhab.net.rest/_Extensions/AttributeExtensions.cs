@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace openhab.net.rest
 {
-    public static class AttributeExtensions
+    internal static class AttributeExtensions
     {
         public static T[] GetAttributes<T>(this Enum value)
                           where T : Attribute

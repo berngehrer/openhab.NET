@@ -1,10 +1,10 @@
 ﻿using openhab.net.rest.Http;
 using openhab.net.rest.Items;
 using openhab.net.rest.Json;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace openhab.net.rest
 {
@@ -26,6 +26,13 @@ namespace openhab.net.rest
         }
 
 
+        internal override async Task<IEnumerable<OpenhabItem>> GetAll(OpenhabClient client, MessageHandler message)
+        {
+            var result = await client.SendRequest<ItemRootObject>(message);
+            // Add to statemanager
+            return result.Items.Select(ConvertItem);
+        }
+
         public override async Task<IEnumerable<OpenhabItem>> GetAll()
         {
             CancelSource = new CancellationTokenSource();
@@ -34,8 +41,7 @@ namespace openhab.net.rest
                 Collection = SiteCollection.Items,
                 CancelToken = CancelSource?.Token
             };
-            var result = await Connection.SendRequest<ItemRootObject>(message);
-            return result.Items.Select(ConvertItem);
+            return await GetAll(Connection, message);
         }
         
         public override async Task<OpenhabItem> GetByName(string name)
@@ -47,6 +53,7 @@ namespace openhab.net.rest
                 Collection = SiteCollection.Items,
                 CancelToken = CancelSource?.Token
             };
+            // Add to statemanager
             return ConvertItem(await Connection.SendRequest<ItemObject>(message));
         }
         

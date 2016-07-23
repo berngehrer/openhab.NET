@@ -19,7 +19,7 @@ namespace openhab.net.rest.Items
             set
             {
                 _value = value;
-                base.Value = string.Format("{0:#.00}", value);
+                UpdateValue(string.Format("{0:#.00}", value));
             }
         }
     }

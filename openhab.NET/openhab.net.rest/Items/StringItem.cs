@@ -11,7 +11,7 @@ namespace openhab.net.rest.Items
         public new string Value
         {
             get { return base.Value; }
-            set { base.Value = value; }
+            set { UpdateValue(value); }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace openhab.net.rest.Items
         public new bool Value
         {
             get { return _value; }
-            set { _value = value; base.Value = ValueToString(); }
+            set { _value = value; UpdateValue(ValueToString()); }
         }
 
 

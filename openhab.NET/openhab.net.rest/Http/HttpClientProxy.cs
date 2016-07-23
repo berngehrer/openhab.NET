@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +26,23 @@ namespace openhab.net.rest.Http
 
         public async Task<string> ReadAsString(MessageHandler message)
         {
+            using (var response = await GetResponse(message))
+            {
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        public async Task<bool> SendMessage(MessageHandler message)
+        {
+            using (var response = await GetResponse(message))
+            {
+                return response.IsSuccessStatusCode;
+            }
+        }
+
+        Task<HttpResponseMessage> GetResponse(MessageHandler message)
+        {
             var request = CreateRequest(message);
 
             Task<HttpResponseMessage> responseTask;
@@ -33,14 +51,8 @@ namespace openhab.net.rest.Http
             } else {
                 responseTask = _innerClient.SendAsync(request);
             }
-
-            using (var response = await responseTask)
-            {
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
-            }
+            return responseTask;
         }
-
 
         HttpClient CreateClient(ClientSettings settings)
         {
@@ -50,8 +62,8 @@ namespace openhab.net.rest.Http
                 AllowAutoRedirect = false,
                 Credentials = settings.Credential
             };
-
-            var client = new HttpClient(httpHandler, true);
+            
+            var client = new HttpClient(httpHandler, true); 
             client.BaseAddress = new Uri(settings.BaseAddress);
             if (_pooling.UsePooling) {
                 client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
@@ -63,11 +75,14 @@ namespace openhab.net.rest.Http
         {
             var header = new MediaTypeWithQualityHeaderValue(message.MimeString);
             var request = new HttpRequestMessage(message.Method, message.RelativeAddress);
-
+            
             request.Headers.Accept.Add(header);
             if (_pooling.UsePooling) {
                 request.Headers.Add("X-Atmosphere-Transport", "long-polling");
                 request.Headers.Add("X-Atmosphere-tracking-id", _pooling.ToString());
+            }
+            if (!string.IsNullOrEmpty(message.Content)) {
+                request.Content = new StringContent(message.Content, Encoding.UTF8, message.MimeString);
             }
             return request;
         }

@@ -1,13 +1,14 @@
 ﻿using openhab.net.rest.Json;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace openhab.net.rest.Items
 {
-    public abstract class OpenhabItem : IOpenhabElement //, IEquatable<OpenhabItem>
+    public abstract class OpenhabItem : IOpenhabElement
     {
-        string[] _notInitialized = { "", "Undefined", "Uninitialized", };
-
+        public event PropertyChangedEventHandler PropertyChanged;
+        
         internal OpenhabItem(ItemObject original)
         {
             Name = original.Name;
@@ -19,32 +20,34 @@ namespace openhab.net.rest.Items
         public Uri Link { get; }
         public string Name { get; }
         public ItemType Type { get; }
-        public string Value { get; protected set; }
+        public string Value { get; private set; }
+        public bool HasChanged { get; private set; }
 
-        public bool IsInitialized => !_notInitialized.Contains(Value);
-
-        //public static bool operator ==(OpenhabItem a, OpenhabItem b)
-        //{
-        //    return a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
-        //}
-
-        //public static bool operator !=(OpenhabItem a, OpenhabItem b)
-        //{
-        //    return !a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
-        //}
-
-        //public bool Equals(OpenhabItem other) => this == other;
-
-        //public override int GetHashCode() => Name.GetHashCode();
-
+        public bool IsInitialized
+        {
+            get { return !(new[]{ "", "Undefined", "Uninitialized" }).Contains(Value); }
+        }
+        
         public override string ToString() => Value;
 
-        //public override bool Equals(object obj)
-        //{
-        //    var other = obj as OpenhabItem;
-        //    if (other != null)
-        //        return Equals(other);
-        //    return base.Equals(obj);
-        //}
+        public void Reset()
+        {
+            HasChanged = false;
+        }
+
+        protected void UpdateValue(string value)
+        {
+            if (!Value.Equals(value)) {
+                Value = value;
+                HasChanged = true;
+                FirePropertyChanged();
+            }
+        }
+
+        void FirePropertyChanged()
+        {
+            var args = new PropertyChangedEventArgs(nameof(Value));
+            PropertyChanged?.Invoke(this, args);
+        }
     }
 }
