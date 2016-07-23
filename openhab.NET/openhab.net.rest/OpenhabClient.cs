@@ -1,13 +1,16 @@
-﻿using openhab.net.rest.Core;
+﻿using Newtonsoft.Json;
+using openhab.net.rest.Core;
 using openhab.net.rest.Http;
 using System;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace openhab.net.rest
 {
-    public abstract class OpenhabClient<T> : IDisposable where T : IOpenhabElement
+    internal class OpenhabClient : IDisposable
     {
-        protected OpenhabClient(ClientSettings settings, bool pooling = false)
+        HttpClientProxy _proxy;
+        
+        internal OpenhabClient(ClientSettings settings, bool pooling = false)
         {
             Settings = settings;
 
@@ -19,12 +22,19 @@ namespace openhab.net.rest
         }
 
         public ClientSettings Settings { get; }
-
-        internal CancellationToken? CancelToken { get; }
-
-        HttpClientProxy _proxy;
-        internal HttpClientProxy RestProxy => _proxy;
         
+        internal Task<bool> SendCommand()
+        {
+            // todo
+            return Task.FromResult(true);
+        }
+
+        internal async Task<T> SendRequest<T>(MessageHandler message) where T : class, new()
+        {
+            var json = await _proxy.ReadAsString(message);
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
 
         public void Dispose()
         {

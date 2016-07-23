@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace openhab.net.rest.Items
 {
-    public abstract class OpenhabItem : IOpenhabElement, IEquatable<OpenhabItem>
+    public abstract class OpenhabItem : IOpenhabElement //, IEquatable<OpenhabItem>
     {
         string[] _notInitialized = { "", "Undefined", "Uninitialized", };
 
@@ -23,28 +23,28 @@ namespace openhab.net.rest.Items
 
         public bool IsInitialized => !_notInitialized.Contains(Value);
 
-        public static bool operator ==(OpenhabItem a, OpenhabItem b)
-        {
-            return a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
-        }
+        //public static bool operator ==(OpenhabItem a, OpenhabItem b)
+        //{
+        //    return a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
+        //}
 
-        public static bool operator !=(OpenhabItem a, OpenhabItem b)
-        {
-            return !a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
-        }
+        //public static bool operator !=(OpenhabItem a, OpenhabItem b)
+        //{
+        //    return !a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
+        //}
 
-        public bool Equals(OpenhabItem other) => this == other;
+        //public bool Equals(OpenhabItem other) => this == other;
 
-        public override int GetHashCode() => Name.GetHashCode();
+        //public override int GetHashCode() => Name.GetHashCode();
 
         public override string ToString() => Value;
 
-        public override bool Equals(object obj)
-        {
-            var other = obj as OpenhabItem;
-            if (other != null)
-                return Equals(other);
-            return base.Equals(obj);
-        }
+        //public override bool Equals(object obj)
+        //{
+        //    var other = obj as OpenhabItem;
+        //    if (other != null)
+        //        return Equals(other);
+        //    return base.Equals(obj);
+        //}
     }
 }

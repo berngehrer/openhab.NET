@@ -23,12 +23,12 @@ namespace openhab.net.rest.test
 
         [TestMethod]
         public void TestOpenhabItemClient()
-        {
+        { 
             Task.Run(async () =>
             {
-                using (var client = new OpenhabItemClient(Settings))
+                using (var context = new ItemContext(Settings))
                 {
-                    var items = await client.GetAllAsync();
+                    var items = await context.GetAll();
                     Assert.IsNotNull(items);
                     Assert.IsTrue(items.Any());
                 }
@@ -41,43 +41,44 @@ namespace openhab.net.rest.test
         {
             Task.Run(async () =>
             {
-                using (var client = new OpenhabItemClient(Settings))
+                var strategy = new UpdateStrategy(realtime: true);
+                using (var context = new ItemContext(Settings, strategy))
                 {
-                    var item = await client.GetByNameAsync(TestItem);
+                    var item = await context.GetByName(TestItem);
                     Assert.IsNotNull(item);
                 }
             })
             .GetAwaiter().GetResult();
         }
 
-        [TestMethod]
-        public void TestOpenhabSitemapClient()
-        {
-            Task.Run(async () =>
-            {
-                using (var client = new OpenhabSitemapClient(Settings))
-                {
-                    var sitemaps = await client.GetAllAsync();
-                    Assert.IsNotNull(sitemaps);
-                    Assert.IsTrue(sitemaps.Any());
-                }
-            })
-            .GetAwaiter().GetResult();
-        }
+        //[TestMethod]
+        //public void TestOpenhabSitemapClient()
+        //{
+        //    Task.Run(async () =>
+        //    {
+        //        using (var client = new OpenhabSitemapClient(Settings))
+        //        {
+        //            var sitemaps = await client.GetAllAsync();
+        //            Assert.IsNotNull(sitemaps);
+        //            Assert.IsTrue(sitemaps.Any());
+        //        }
+        //    })
+        //    .GetAwaiter().GetResult();
+        //}
 
-        [TestMethod]
-        public void TestOpenhabSitemapSingleClient()
-        {
-            Task.Run(async () =>
-            {
-                using (var client = new OpenhabSitemapClient(Settings))
-                {
-                    var sitemap = await client.GetByNameAsync(TestSitemap);
-                    Assert.IsNotNull(sitemap);
-                }
-            })
-            .GetAwaiter().GetResult();
-        }
+        //[TestMethod]
+        //public void TestOpenhabSitemapSingleClient()
+        //{
+        //    Task.Run(async () =>
+        //    {
+        //        using (var client = new OpenhabSitemapClient(Settings))
+        //        {
+        //            var sitemap = await client.GetByNameAsync(TestSitemap);
+        //            Assert.IsNotNull(sitemap);
+        //        }
+        //    })
+        //    .GetAwaiter().GetResult();
+        //}
 
         [TestMethod]
         public void TestHttpClientProxy()

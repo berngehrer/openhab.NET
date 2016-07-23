@@ -1,55 +1,56 @@
-﻿using Newtonsoft.Json;
-using openhab.net.rest.Http;
+﻿using openhab.net.rest.Http;
 using openhab.net.rest.Items;
 using openhab.net.rest.Json;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace openhab.net.rest
 {
-    public class OpenhabItemClient : OpenhabClient<OpenhabItem>, IOpenhabClient<OpenhabItem>
+    public class ItemContext : OpenhabContext<OpenhabItem>
     {
-        public OpenhabItemClient(string host, int port = 8080, bool pooling = false)
-            : base(new ClientSettings(host, port), pooling)
+        public ItemContext(string host, int port = 8080)
+            : this(host, port, null)
         {
         }
 
-        public OpenhabItemClient(ClientSettings settings, bool pooling = false)
-            : base(settings, pooling)
+        public ItemContext(string host, int port = 8080, UpdateStrategy stategy = null)
+            : this(new ClientSettings(host, port), stategy)
         {
+        }
+
+        public ItemContext(ClientSettings settings, UpdateStrategy strategy = null) 
+            : base(settings, strategy)
+        {
+        }
+
+
+        public override async Task<IEnumerable<OpenhabItem>> GetAll()
+        {
+            CancelSource = new CancellationTokenSource();
+            var message = new MessageHandler
+            {
+                Collection = SiteCollection.Items,
+                CancelToken = CancelSource?.Token
+            };
+            var result = await Connection.SendRequest<ItemRootObject>(message);
+            return result.Items.Select(ConvertItem);
         }
         
-
-        public async Task<OpenhabItem> GetByNameAsync(string name)
+        public override async Task<OpenhabItem> GetByName(string name)
         {
+            CancelSource = new CancellationTokenSource();
             var message = new MessageHandler
             {
                 RelativePath = name,
-                CancelToken = base.CancelToken,
-                Collection = SiteCollection.Items
+                Collection = SiteCollection.Items,
+                CancelToken = CancelSource?.Token
             };
-
-            var json = await RestProxy.ReadAsString(message);
-            var item = JsonConvert.DeserializeObject<ItemObject>(json);
-            return ConvertItem(item);
+            return ConvertItem(await Connection.SendRequest<ItemObject>(message));
         }
-
-        public async Task<IEnumerable<OpenhabItem>> GetAllAsync()
-        {
-            var message = new MessageHandler
-            {
-                CancelToken = base.CancelToken,
-                Collection = SiteCollection.Items
-            };
-            
-            var json = await RestProxy.ReadAsString(message);
-            var result = JsonConvert.DeserializeObject<ItemRootObject>(json);
-            return result.Items.Select(ConvertItem);
-        }
-
-
-        internal OpenhabItem ConvertItem(ItemObject item)
+        
+        OpenhabItem ConvertItem(ItemObject item)
         {
             switch (item.ItemType)
             {
@@ -78,5 +79,7 @@ namespace openhab.net.rest
             }
             return null;
         }
+
+        internal override SiteCollection Collection => SiteCollection.Items;
     }
 }

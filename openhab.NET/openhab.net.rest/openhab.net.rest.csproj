@@ -34,14 +34,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ContextRefreshedEventArgs.cs" />
     <Compile Include="Core\IdProvider.cs" />
     <Compile Include="Http\PoolingSession.cs" />
     <Compile Include="Core\ValueParser.cs" />
-    <Compile Include="IOpenhabClient.cs" />
     <Compile Include="IOpenhabElement.cs" />
+    <Compile Include="ItemContext.cs" />
+    <Compile Include="ObjectStateManager.cs" />
+    <Compile Include="OpenhabContext.cs" />
     <Compile Include="Json\SitemapRoot.cs" />
     <Compile Include="OpenhabClient.cs" />
-    <Compile Include="OpenhabItemClient.cs" />
     <Compile Include="Items\CallItem.cs" />
     <Compile Include="Items\ColorItem.cs" />
     <Compile Include="Items\ContactItem.cs" />
@@ -60,8 +62,10 @@
     <Compile Include="Http\ClientSettings.cs" />
     <Compile Include="Items\ItemType.cs" />
     <Compile Include="Http\MIMEType.cs" />
-    <Compile Include="OpenhabSitemapClient.cs" />
+    <Compile Include="Docs\OpenhabSitemapClient.cs" />
     <Compile Include="Sitemaps\OpenhabSitemap.cs" />
+    <Compile Include="Core\EndlessDelayTimer.cs" />
+    <Compile Include="UpdateStrategy.cs" />
     <Compile Include="_Extensions\AttributeExtensions.cs" />
     <Compile Include="_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Extensions\FieldValueExtensions.cs" />

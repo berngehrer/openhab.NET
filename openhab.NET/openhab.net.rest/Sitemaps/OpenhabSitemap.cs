@@ -16,6 +16,14 @@ namespace openhab.net.rest.Sitemaps
         public string Name { get; }
         public string Description { get; }
 
+        public string Value
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public static bool operator ==(OpenhabSitemap a, OpenhabSitemap b)
         {
             return a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
