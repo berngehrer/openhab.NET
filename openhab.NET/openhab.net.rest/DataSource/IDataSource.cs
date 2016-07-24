@@ -1,11 +1,12 @@
 ﻿using openhab.net.rest.Http;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace openhab.net.rest.DataSource
 {
-    internal interface IDataSource<T> where T : IOpenhabElement
+    internal interface IDataSource<T> : IDisposable where T : IOpenhabElement
     {
         SiteCollection TargetCollection { get; }
 

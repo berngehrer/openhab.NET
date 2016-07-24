@@ -1,9 +1,12 @@
 ﻿using openhab.net.rest.Core;
+using openhab.net.rest.DataSource;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace openhab.net.rest
@@ -15,14 +18,13 @@ namespace openhab.net.rest
         
         public ObjectStateManager(OpenhabContext<T> context) 
         {
+            ElementSource = context.CreateDataSource();
+
             _context = context;
             _worker = CreateWorker();
             _worker?.Start(UpdateWorkerMethod);
         }
-
-        // TODO
-        public DataSource.IDataSource<T> ElementSource { get; }
-
+        
         ClientBackgroundWorker CreateWorker()
         {
             var workerClient = _context.ClientFactory.Create();
@@ -32,6 +34,8 @@ namespace openhab.net.rest
             }
             return null;
         }
+
+        public IDataSource<T> ElementSource { get; }
 
         public bool HasBackgroundWorker => _worker != null;
 
@@ -49,45 +53,67 @@ namespace openhab.net.rest
         async void ValueChanged(object sender, PropertyChangedEventArgs e)
         {
             if (sender.GetType().Is<T>()) {
-                await SendStatus((T)sender);
+                await RaiseStatus((T)sender);
             }
         }
 
         void UpdateWorkerMethod(OpenhabClient client)
         {
-            // TODO !
-            var elements = ElementSource.GetAll().WaitSave(_worker.Token);
-            elements?.ForEach(element =>
+            using (var source = _context.CreateDataSource(client))
             {
-                if (!_worker.IsCancellationRequested)
+                var elements = source.GetAll().WaitSave(_worker.Token);
+                elements?.ForEach(element =>
                 {
-                    // TODO: Abgleich mit interner Collection
-                    SendStatus(element).WaitSave(_worker.Token);
+                    if (!_worker.IsCancellationRequested) {
+                        ProcessElement(element).WaitSave(_worker.Token);
+                    }
+                    else return;
+                });
+            }
+        }
+
+        public async Task<IEnumerable<T>> GetAll(CancellationToken token)
+        {
+            var elements = await ElementSource.GetAll(token);
+            elements?.ForEach(element => 
+            {
+                if (!token.IsCancellationRequested) {
+                    ProcessElement(element).WaitSave(token);
                 }
                 else return;
             });
+            return elements;
         }
 
-        async Task SendStatus(T element)
+        public async Task<T> GetByName(string name, CancellationToken token)
         {
-            //if (!element.HasChanged) {
-            //    return;
-            //}
+            var element = await ElementSource.GetByName(name, token);
+            await ProcessElement(element);
+            return element;
+        }        
 
-            // TODO: DataSourceFactory?
-            using (var client = _context.ClientFactory.Create(withStrategy: false))
-            using (var source = new DataSource.ItemSource(client))
+        // TODO !!!
+        async Task<bool> ProcessElement(T element)
+        {
+            var existing = this.FirstOrDefault(x => x.Name.Equals(element.Name));
+            if (existing == null)
             {
-                bool success = await source.UpdateState(element);
-                if (success)
-                {
-                    _context.FireRefreshed(element);
-                }
+                Add(element);
+                return true;
+            }
+            return false;
+        }
+
+        async Task RaiseStatus(T element)
+        {
+            bool success = await ElementSource.UpdateState(element);
+            if (success) {
+                _context.FireRefreshed(element);
             }
         }
 
         public void Dispose()
-        {
+        {  
             _worker?.Cancel(false);
             Clear();
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using openhab.net.rest.DataSource;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,28 +16,28 @@ namespace openhab.net.rest
 
         protected OpenhabContext(ClientSettings settings, UpdateStrategy strategy)
         {
-            ClientFactory = new ContextClientFactory(settings, strategy);  
+            ClientFactory = new ContextClientFactory(settings, strategy);
+            _objectManager = new ObjectStateManager<T>(this);
         }
-        
 
-        internal ObjectStateManager<T> ObjectManager
-        {
-            get { return _objectManager ?? (_objectManager = new ObjectStateManager<T>(this)); }
-        }
 
         internal ContextClientFactory ClientFactory { get; }
+
+        internal ObjectStateManager<T> ObjectManager => _objectManager;
+        
+        public bool IsSyncronized => ObjectManager.HasBackgroundWorker;
 
 
         public async Task<IEnumerable<T>> GetAll()
         {
             _cancelSource = new CancellationTokenSource();
-            return await ObjectManager.ElementSource.GetAll(_cancelSource.Token);
+            return await ObjectManager.GetAll(_cancelSource.Token);
         }
 
         public async Task<T> GetByName(string name)
         {
             _cancelSource = new CancellationTokenSource();
-            return await ObjectManager.ElementSource.GetByName(name, _cancelSource.Token);
+            return await ObjectManager.GetByName(name, _cancelSource.Token);
         }
 
         internal void FireRefreshed(IOpenhabElement element)
@@ -45,7 +46,7 @@ namespace openhab.net.rest
                 Refreshed?.Invoke(this, new ContextRefreshedEventArgs<T>((T)element));
             }
         }
-
+        
         public void Cancel()
         {
             if (!_cancelSource?.IsCancellationRequested ?? false)
@@ -59,5 +60,7 @@ namespace openhab.net.rest
             _cancelSource?.Cancel(false);
             _objectManager.Dispose();
         }
+
+        internal abstract IDataSource<T> CreateDataSource(OpenhabClient client = null);
     }
 }

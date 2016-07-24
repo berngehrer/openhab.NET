@@ -1,22 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using openhab.net.rest.Http;
+﻿using openhab.net.rest.Http;
 using openhab.net.rest.Items;
 using openhab.net.rest.Json;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace openhab.net.rest.DataSource
 {
-    internal class ItemSource : IDataSource<OpenhabItem>, IDisposable
+    internal class ItemSource : IDataSource<OpenhabItem>
     {
+        bool _disposeClient;
         OpenhabClient _client;
 
-        public ItemSource(OpenhabClient client)
+        public ItemSource(OpenhabClient client, bool dispose = false)
         {
             _client = client;
+            _disposeClient = dispose;
         }
 
         public SiteCollection TargetCollection => SiteCollection.Items;
@@ -78,7 +79,9 @@ namespace openhab.net.rest.DataSource
 
         public void Dispose()
         {
-            _client.Dispose();
+            if (_disposeClient) {
+                _client.Dispose();
+            }
         }
 
 
