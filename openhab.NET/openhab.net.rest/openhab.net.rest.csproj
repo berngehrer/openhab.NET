@@ -35,9 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ContextClientFactory.cs" />
-    <Compile Include="Core\IFactory.cs" />
     <Compile Include="ContextRefreshedEventArgs.cs" />
     <Compile Include="Core\IdProvider.cs" />
+    <Compile Include="DataSource\ItemSource.cs" />
     <Compile Include="Http\PoolingSession.cs" />
     <Compile Include="Core\ValueParser.cs" />
     <Compile Include="DataSource\IDataSource.cs" />

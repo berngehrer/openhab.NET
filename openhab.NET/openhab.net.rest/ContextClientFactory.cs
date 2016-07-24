@@ -1,38 +1,34 @@
-﻿using openhab.net.rest.Core;
-using System;
+﻿using System;
 
 namespace openhab.net.rest
 {
-    internal class ContextClientFactory<T> : IFactory<OpenhabClient> where T : IOpenhabElement
+    internal class ContextClientFactory 
     {
-        OpenhabContext<T> _context;
-        
-        public ContextClientFactory(OpenhabContext<T> context)
+        public ContextClientFactory(ClientSettings settings, UpdateStrategy strategy)
         {
-            _context = context;
+            Settings = settings;
+            Strategy = strategy ?? UpdateStrategy.Default;
         }
-        
-        public OpenhabClient Create(UpdateStrategy strategy)
+
+        public ClientSettings Settings { get; }
+        public UpdateStrategy Strategy { get; }
+
+        public OpenhabClient Create(bool withStrategy = true)
         {
+            var strategy = withStrategy ? this.Strategy : UpdateStrategy.Default;
+
             // Timed update
             if (strategy.Interval != TimeSpan.Zero)
             {
-                return new OpenhabClient(_context.Connection.Settings);
+                return new OpenhabClient(Settings);
             }
             // Permanent update by server push
             else if (strategy.Realtime)
             {
-                return new OpenhabClient(_context.Connection.Settings, pooling: true);
+                return new OpenhabClient(Settings, pooling: true);
             }
             // No background update
             return null;
         }
-
-        public OpenhabClient Create()
-        {
-            return Create(_context.Strategy ?? UpdateStrategy.Default);
-        }
-
-        object IFactory.Create() => Create();
     }
 }

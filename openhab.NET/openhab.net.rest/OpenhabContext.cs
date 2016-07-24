@@ -7,26 +7,37 @@ namespace openhab.net.rest
 {
     public abstract class OpenhabContext<T> : IDisposable where T : IOpenhabElement
     {
-        OpenhabClient _connection;
         ObjectStateManager<T> _objectManager;
+        CancellationTokenSource _cancelSource;
 
         public event ContextRefreshedHandler<T> Refreshed;
-        
+
 
         protected OpenhabContext(ClientSettings settings, UpdateStrategy strategy)
         {
-            Strategy = strategy;
-
-            _connection = new OpenhabClient(settings);
-            _objectManager = new ObjectStateManager<T>(this);
+            ClientFactory = new ContextClientFactory(settings, strategy);  
         }
         
-        internal OpenhabClient Connection => _connection;
-        //internal ObjectStateManager<T> ObjectManager => _objectManager;
-        internal UpdateStrategy Strategy { get; private set; }
-        internal CancellationTokenSource CancelSource { get; set; }
-        internal abstract Http.SiteCollection Collection { get; }
 
+        internal ObjectStateManager<T> ObjectManager
+        {
+            get { return _objectManager ?? (_objectManager = new ObjectStateManager<T>(this)); }
+        }
+
+        internal ContextClientFactory ClientFactory { get; }
+
+
+        public async Task<IEnumerable<T>> GetAll()
+        {
+            _cancelSource = new CancellationTokenSource();
+            return await ObjectManager.ElementSource.GetAll(_cancelSource.Token);
+        }
+
+        public async Task<T> GetByName(string name)
+        {
+            _cancelSource = new CancellationTokenSource();
+            return await ObjectManager.ElementSource.GetByName(name, _cancelSource.Token);
+        }
 
         internal void FireRefreshed(IOpenhabElement element)
         {
@@ -37,22 +48,16 @@ namespace openhab.net.rest
 
         public void Cancel()
         {
-            if (!CancelSource?.IsCancellationRequested ?? false)
+            if (!_cancelSource?.IsCancellationRequested ?? false)
             {
-                CancelSource.Cancel(false);
+                _cancelSource.Cancel(false);
             }
         }
 
         public void Dispose()
         {
-            CancelSource?.Cancel(false);
+            _cancelSource?.Cancel(false);
             _objectManager.Dispose();
-            _connection.Dispose();
         }
-
-        // TODO: bessere Lösung
-        internal abstract Task<IEnumerable<T>> GetAll(OpenhabClient client, Http.MessageHandler message);
-        public abstract Task<IEnumerable<T>> GetAll();
-        public abstract Task<T> GetByName(string name);
     }
 }

@@ -1,11 +1,9 @@
 ﻿using openhab.net.rest.Core;
-using openhab.net.rest.Http;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace openhab.net.rest
@@ -22,12 +20,15 @@ namespace openhab.net.rest
             _worker?.Start(UpdateWorkerMethod);
         }
 
+        // TODO
+        public DataSource.IDataSource<T> ElementSource { get; }
+
         ClientBackgroundWorker CreateWorker()
         {
-            var clientFactory = new ContextClientFactory<T>(_context);
-            var workerClient = clientFactory.Create();
+            var workerClient = _context.ClientFactory.Create();
             if (workerClient != null) {
-                return new ClientBackgroundWorker(workerClient, _context.Strategy.Interval.Milliseconds);
+                var delay = _context.ClientFactory.Strategy.Interval.Milliseconds;
+                return new ClientBackgroundWorker(workerClient, delay);
             }
             return null;
         }
@@ -54,46 +55,34 @@ namespace openhab.net.rest
 
         void UpdateWorkerMethod(OpenhabClient client)
         {
-            var message = new MessageHandler
+            // TODO !
+            var elements = ElementSource.GetAll().WaitSave(_worker.Token);
+            elements?.ForEach(element =>
             {
-                CancelToken = _worker.Token,
-                Collection = _context.Collection
-            };
-
-            _context.GetAll(client, message)
-                    .WaitSave(_worker.Token)
-                   ?.ForEach(element =>
-                    {
-                        if (!_worker.IsCancellationRequested)
-                        {
-                            // TODO: Abgleich mit interner Collection
-                            SendStatus(element).WaitSave(_worker.Token);
-                        }
-                        else return;
-                    });
+                if (!_worker.IsCancellationRequested)
+                {
+                    // TODO: Abgleich mit interner Collection
+                    SendStatus(element).WaitSave(_worker.Token);
+                }
+                else return;
+            });
         }
 
         async Task SendStatus(T element)
         {
-            if (!element.HasChanged) {
-                return;
-            }
+            //if (!element.HasChanged) {
+            //    return;
+            //}
 
-            var message = new MessageHandler
+            // TODO: DataSourceFactory?
+            using (var client = _context.ClientFactory.Create(withStrategy: false))
+            using (var source = new DataSource.ItemSource(client))
             {
-                Method = HttpMethod.Put,
-                MimeType = MIMEType.PlainText,
-                Content = element.ToString(),
-                Collection = _context.Collection,
-                RelativePath = $"{element.Name}/state"
-            };
-             
-            var sendTask = _context.Connection.SendStatus(message);
-            await sendTask;
-            if (sendTask.IsSuccess() && sendTask.Result == true)
-            {
-                element.Reset();
-                _context.FireRefreshed(element);
+                bool success = await source.UpdateState(element);
+                if (success)
+                {
+                    _context.FireRefreshed(element);
+                }
             }
         }
 

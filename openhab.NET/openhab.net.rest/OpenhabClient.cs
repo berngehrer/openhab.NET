@@ -28,15 +28,6 @@ namespace openhab.net.rest
 
         public Task<bool> SendCommand(MessageHandler message)
         {
-            // TODO
-            return SendWithSemaphore(
-                () => Task.FromResult(true), 
-                message.GetToken()
-            );
-        }
-
-        public Task<bool> SendStatus(MessageHandler message)
-        {
             return SendWithSemaphore(
                 () => _proxy.SendMessage(message),
                 message.GetToken()
