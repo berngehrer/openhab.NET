@@ -1,4 +1,5 @@
-﻿using System;
+﻿using openhab.net.rest.Core;
+using System;
 
 namespace openhab.net.rest
 {
@@ -13,7 +14,21 @@ namespace openhab.net.rest
         public ClientSettings Settings { get; }
         public UpdateStrategy Strategy { get; }
 
-        public OpenhabClient Create(bool withStrategy = true)
+        public OpenhabClient Create()
+        {
+            return Create(false);
+        }
+
+        public ClientBackgroundWorker CreateWorker()
+        {
+            var workerClient = Create(true);
+            if (workerClient != null) {
+                return new ClientBackgroundWorker(workerClient, Strategy.Interval.Milliseconds);
+            }
+            return null;
+        }
+
+        OpenhabClient Create(bool withStrategy)
         {
             var strategy = withStrategy ? this.Strategy : UpdateStrategy.Default;
 

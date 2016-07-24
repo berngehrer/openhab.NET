@@ -16,15 +16,15 @@ namespace openhab.net.rest.Items
 
 
         bool _value;
-        public new bool Value
-        {
-            get { return _value; }
-            set { _value = value; UpdateValue(ValueToString()); }
-        }
+        //public new bool Value
+        //{
+        //    get { return _value; }
+        //    set { _value = value; ShadowUpdate(ValueToString()); }
+        //}
 
 
         bool StringToValue() => base.Value.Equals(OpenState);
 
-        string ValueToString() => (Value) ? OpenState : ClosedState;
+        //string ValueToString() => (Value) ? OpenState : ClosedState;
     }
 }

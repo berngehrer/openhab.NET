@@ -63,5 +63,10 @@ namespace openhab.net.rest.Sitemaps
         {
             throw new NotImplementedException();
         }
+
+        public bool ShadowUpdate(IOpenhabElement element)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

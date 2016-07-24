@@ -43,6 +43,7 @@
     <Compile Include="DataSource\IDataSource.cs" />
     <Compile Include="IOpenhabElement.cs" />
     <Compile Include="ItemContext.cs" />
+    <Compile Include="Core\NotifyCollection.cs" />
     <Compile Include="ObjectStateManager.cs" />
     <Compile Include="OpenhabContext.cs" />
     <Compile Include="Json\SitemapRoot.cs" />

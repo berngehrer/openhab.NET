@@ -2,109 +2,79 @@
 using openhab.net.rest.DataSource;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace openhab.net.rest
 {
-    internal class ObjectStateManager<T> : ObservableCollection<T>, IDisposable where T : IOpenhabElement
+    internal class ObjectStateManager<T> : IDisposable where T : IOpenhabElement
     {
+        IDataSource<T> _source;
         OpenhabContext<T> _context;
         ClientBackgroundWorker _worker;
         
         public ObjectStateManager(OpenhabContext<T> context) 
         {
-            ElementSource = context.CreateDataSource();
-
             _context = context;
-            _worker = CreateWorker();
-            _worker?.Start(UpdateWorkerMethod);
-        }
-        
-        ClientBackgroundWorker CreateWorker()
-        {
-            var workerClient = _context.ClientFactory.Create();
-            if (workerClient != null) {
-                var delay = _context.ClientFactory.Strategy.Interval.Milliseconds;
-                return new ClientBackgroundWorker(workerClient, delay);
-            }
-            return null;
+            _source = context.CreateDataSource();
+            _worker = context.ClientFactory.CreateWorker();
+            _worker?.Start(ElementSyncWorker);
+
+            Elements = new NotifyCollection<T>(async (element) => await RaiseUpdate(element));
         }
 
-        public IDataSource<T> ElementSource { get; }
-
+        NotifyCollection<T> Elements { get; }
+        IDataSource<T> ElementSource => _source;
         public bool HasBackgroundWorker => _worker != null;
+        
 
-
-        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            foreach (var item in e.OldItems.OfType<INotifyPropertyChanged>()) {
-                item.PropertyChanged -= ValueChanged;
-            }
-            foreach (var item in e.NewItems.OfType<INotifyPropertyChanged>()) {
-                item.PropertyChanged += ValueChanged;
-            }
-        }
-
-        async void ValueChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (sender.GetType().Is<T>()) {
-                await RaiseStatus((T)sender);
-            }
-        }
-
-        void UpdateWorkerMethod(OpenhabClient client)
+        void ElementSyncWorker(OpenhabClient client)
         {
             using (var source = _context.CreateDataSource(client))
             {
                 var elements = source.GetAll().WaitSave(_worker.Token);
-                elements?.ForEach(element =>
-                {
-                    if (!_worker.IsCancellationRequested) {
-                        ProcessElement(element).WaitSave(_worker.Token);
-                    }
-                    else return;
-                });
+                ProcessAll(elements, _worker.Token);
             }
         }
 
         public async Task<IEnumerable<T>> GetAll(CancellationToken token)
         {
             var elements = await ElementSource.GetAll(token);
-            elements?.ForEach(element => 
-            {
-                if (!token.IsCancellationRequested) {
-                    ProcessElement(element).WaitSave(token);
-                }
-                else return;
-            });
-            return elements;
+            return ProcessAll(elements, token, false);
         }
 
         public async Task<T> GetByName(string name, CancellationToken token)
         {
             var element = await ElementSource.GetByName(name, token);
-            await ProcessElement(element);
-            return element;
-        }        
-
-        // TODO !!!
-        async Task<bool> ProcessElement(T element)
-        {
-            var existing = this.FirstOrDefault(x => x.Name.Equals(element.Name));
-            if (existing == null)
-            {
-                Add(element);
-                return true;
-            }
-            return false;
+            return ProcessElement(element, false);
         }
 
-        async Task RaiseStatus(T element)
+
+        IEnumerable<T> ProcessAll(IEnumerable<T> collection, CancellationToken token, bool notify = true)
+        {
+            if (collection != null) {
+                foreach (var item in collection)
+                {
+                    if (!token.IsCancellationRequested) {
+                        yield return ProcessElement(item);
+                    }
+                    else break;
+                }
+            }
+        }
+
+        T ProcessElement(T element, bool notify = true)
+        {
+            // TODO: Add Semaphore
+            var storeElement = Elements.AddOrGet(element);
+            if (storeElement.ShadowUpdate(element) && notify)
+            {
+                _context.FireRefreshed(element);
+            }
+            return storeElement;
+        }
+
+        async Task RaiseUpdate(T element)
         {
             bool success = await ElementSource.UpdateState(element);
             if (success) {
@@ -113,9 +83,10 @@ namespace openhab.net.rest
         }
 
         public void Dispose()
-        {  
+        {
+            Elements.Clear();
+            _source.Dispose();
             _worker?.Cancel(false);
-            Clear();
         }
     }
 }

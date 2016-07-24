@@ -21,7 +21,6 @@ namespace openhab.net.rest.Items
         public string Name { get; }
         public ItemType Type { get; }
         public string Value { get; private set; }
-        public bool HasChanged { get; private set; }
 
         public bool IsInitialized
         {
@@ -29,22 +28,29 @@ namespace openhab.net.rest.Items
         }
         
         public override string ToString() => Value;
+        
 
-        public void Reset()
+        public bool ShadowUpdate(IOpenhabElement element)
         {
-            HasChanged = false;
-        }
+            var value = ((OpenhabItem)element).Value;
 
-        protected void UpdateValue(string value)
-        {
-            if (!Value.Equals(value)) {
+            bool hasChanged = !Value.Equals(value);
+            if (hasChanged) {
                 Value = value;
-                HasChanged = true;
-                FirePropertyChanged();
             }
+            return hasChanged;
         }
 
-        void FirePropertyChanged()
+        bool ShadowUpdate(string value)
+        {
+            bool hasChanged = !Value.Equals(value);
+            if (hasChanged) {
+                Value = value;
+            }
+            return hasChanged;
+        }
+
+        protected void FireValueChanged()
         {
             var args = new PropertyChangedEventArgs(nameof(Value));
             PropertyChanged?.Invoke(this, args);
