@@ -5,7 +5,7 @@ namespace openhab.net.rest.Items
 {
     public class NumberItem : OpenhabItem
     {
-        internal NumberItem(ItemObject original) : base(original)
+        internal NumberItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
             if (IsInitialized) {
                 ValueParser.TryParse(base.Value, out _value);

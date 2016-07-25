@@ -6,7 +6,7 @@ namespace openhab.net.rest.Items
 {
     public class DateTimeItem : OpenhabItem
     {
-        internal DateTimeItem(ItemObject original) : base(original)
+        internal DateTimeItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
             if (IsInitialized) {
                 ValueParser.TryParse(base.Value, out _value);
@@ -20,7 +20,7 @@ namespace openhab.net.rest.Items
             set
             {
                 _value = value;
-                ShadowUpdate(value.ToString());
+                Update(value.ToString());
             }
         }
     }

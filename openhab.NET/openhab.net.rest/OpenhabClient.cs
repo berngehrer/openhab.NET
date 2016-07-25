@@ -50,7 +50,7 @@ namespace openhab.net.rest
             return await task().ContinueWith(t =>
             {
                 _semaphore.Release();
-                return t.GetResultSave();
+                return t.GetAwaiter().GetResult();
             },
             TaskContinuationOptions.ExecuteSynchronously);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +7,17 @@ namespace openhab.net.rest
 {
     internal static class EnumerableExtensions
     {
+        public static T GetOrAdd<T>(this IList<T> list, T item, Predicate<T> comparer)
+        {
+            var existing = list.FirstOrDefault(x => comparer(x));
+            if (existing == null)
+            {
+                list.Add(item);
+                return item;
+            }
+            return existing;
+        }
+
         public static void AddRange<T>(this IEnumerable<T> source, IEnumerable<T> target)
         {
             var list = source as IList<T>;

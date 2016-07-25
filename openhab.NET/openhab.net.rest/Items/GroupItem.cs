@@ -4,7 +4,7 @@ namespace openhab.net.rest.Items
 {
     public class GroupItem : OpenhabItem
     {
-        internal GroupItem(ItemObject original) : base(original)
+        internal GroupItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
         }
     }

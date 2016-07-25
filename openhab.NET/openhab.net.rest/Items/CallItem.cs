@@ -4,7 +4,7 @@ namespace openhab.net.rest.Items
 {
     public class CallItem : OpenhabItem
     {
-        internal CallItem(ItemObject original) : base(original)
+        internal CallItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
         }
     }

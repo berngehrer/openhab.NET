@@ -24,9 +24,9 @@ namespace openhab.net.rest
         internal override IDataSource<OpenhabItem> CreateDataSource(OpenhabClient client = null)
         {
             if (client == null) {
-                return new ItemSource(ClientFactory.Create(), true);
+                return new ItemSourceAdapter(Observer, ClientFactory.Create());
             } else {
-                return new ItemSource(client);
+                return new ItemSourceAdapter(Observer, client, disposeClient: false);
             }
         }
     }

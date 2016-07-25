@@ -9,15 +9,17 @@ using System.Threading.Tasks;
 
 namespace openhab.net.rest.DataSource
 {
-    internal class ItemSource : IDataSource<OpenhabItem>
+    internal class ItemSourceAdapter : IDataSource<OpenhabItem>
     {
         bool _disposeClient;
         OpenhabClient _client;
+        IElementObserver _observer;
 
-        public ItemSource(OpenhabClient client, bool dispose = false)
+        public ItemSourceAdapter(IElementObserver observer, OpenhabClient client, bool disposeClient = true)
         {
             _client = client;
-            _disposeClient = dispose;
+            _observer = observer;
+            _disposeClient = disposeClient;
         }
 
         public SiteCollection TargetCollection => SiteCollection.Items;
@@ -72,9 +74,7 @@ namespace openhab.net.rest.DataSource
 
         public async Task<bool> UpdateState(MessageHandler message)
         {
-            var sendTask = _client.SendCommand(message);
-            await sendTask;
-            return sendTask.IsSuccess() && sendTask.Result == true;
+            return await _client.SendCommand(message);
         }
 
         public void Dispose()
@@ -90,27 +90,29 @@ namespace openhab.net.rest.DataSource
             switch (item.ItemType)
             {
                 case ItemType.Call:
-                    return new CallItem(item);
+                    var a = new CallItem(item, _observer);
+                    _observer.Subscribe(a);
+                    return a;
                 case ItemType.Color:
-                    return new ColorItem(item);
+                    return new ColorItem(item, _observer);
                 case ItemType.Contact:
-                    return new ContactItem(item);
+                    return new ContactItem(item, _observer);
                 case ItemType.DateTime:
-                    return new DateTimeItem(item);
+                    return new DateTimeItem(item, _observer);
                 case ItemType.Dimmer:
-                    return new DimmerItem(item);
+                    return new DimmerItem(item, _observer);
                 case ItemType.Group:
-                    return new GroupItem(item);
+                    return new GroupItem(item, _observer);
                 case ItemType.Location:
-                    return new LocationItem(item);
+                    return new LocationItem(item, _observer);
                 case ItemType.Number:
-                    return new NumberItem(item);
+                    return new NumberItem(item, _observer);
                 case ItemType.Rollershutter:
-                    return new RollershutterItem(item);
+                    return new RollershutterItem(item, _observer);
                 case ItemType.String:
-                    return new StringItem(item);
+                    return new StringItem(item, _observer);
                 case ItemType.Switch:
-                    return new SwitchItem(item);
+                    return new SwitchItem(item, _observer);
             }
             return null;
         }

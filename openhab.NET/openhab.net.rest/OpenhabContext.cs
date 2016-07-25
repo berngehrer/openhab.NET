@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace openhab.net.rest
 {
-    public abstract class OpenhabContext<T> : IDisposable where T : IOpenhabElement
+    public abstract class OpenhabContext<T> : IElementObservable, IDisposable where T : IOpenhabElement
     {
         ObjectStateManager<T> _objectManager;
         CancellationTokenSource _cancelSource;
@@ -16,6 +16,8 @@ namespace openhab.net.rest
 
         protected OpenhabContext(ClientSettings settings, UpdateStrategy strategy)
         {
+            Observer.Subscribe(this);
+
             ClientFactory = new ContextClientFactory(settings, strategy);
             _objectManager = new ObjectStateManager<T>(this);
         }
@@ -24,6 +26,8 @@ namespace openhab.net.rest
         internal ContextClientFactory ClientFactory { get; }
 
         internal ObjectStateManager<T> ObjectManager => _objectManager;
+
+        internal IElementObserver Observer { get; } = new ElementObserver();
         
         public bool IsSyncronized => ObjectManager.HasBackgroundWorker;
 
@@ -39,14 +43,7 @@ namespace openhab.net.rest
             _cancelSource = new CancellationTokenSource();
             return await ObjectManager.GetByName(name, _cancelSource.Token);
         }
-
-        internal void FireRefreshed(IOpenhabElement element)
-        {
-            if (element?.GetType().Is<T>() ?? false) {
-                Refreshed?.Invoke(this, new ContextRefreshedEventArgs<T>((T)element));
-            }
-        }
-        
+                
         public void Cancel()
         {
             if (!_cancelSource?.IsCancellationRequested ?? false)
@@ -62,5 +59,14 @@ namespace openhab.net.rest
         }
 
         internal abstract IDataSource<T> CreateDataSource(OpenhabClient client = null);
+
+
+        public void OnNotify(IOpenhabElement element)
+        {
+            if (element?.GetType().Is<T>() ?? false)
+            {
+                Refreshed?.Invoke(this, new ContextRefreshedEventArgs<T>((T)element));
+            }
+        }
     }
 }

@@ -5,16 +5,20 @@ using System.Linq;
 
 namespace openhab.net.rest.Items
 {
-    public abstract class OpenhabItem : IOpenhabElement
+    public abstract class OpenhabItem : IOpenhabElement, IElementObservable
     {
+        IElementObserver _observer;
+
         public event PropertyChangedEventHandler PropertyChanged;
         
-        internal OpenhabItem(ItemObject original)
+        internal OpenhabItem(ItemObject original, IElementObserver observer)
         {
             Name = original.Name;
             Value = original.State;
             Type = original.ItemType;
             Link = new Uri(original.Link);
+
+            (_observer = observer).Subscribe(this);
         }
 
         public Uri Link { get; }
@@ -30,30 +34,29 @@ namespace openhab.net.rest.Items
         public override string ToString() => Value;
         
 
-        public bool ShadowUpdate(IOpenhabElement element)
+        protected void Update(string value)
         {
-            var value = ((OpenhabItem)element).Value;
-
-            bool hasChanged = !Value.Equals(value);
-            if (hasChanged) {
-                Value = value;
-            }
-            return hasChanged;
-        }
-
-        bool ShadowUpdate(string value)
-        {
-            bool hasChanged = !Value.Equals(value);
-            if (hasChanged) {
-                Value = value;
-            }
-            return hasChanged;
+            Value = value;
+            _observer.Notify(this, this);
         }
 
         protected void FireValueChanged()
         {
             var args = new PropertyChangedEventArgs(nameof(Value));
             PropertyChanged?.Invoke(this, args);
+        }
+
+        public void OnNotify(IOpenhabElement element)
+        {
+            if (Object.ReferenceEquals(this, element))
+            {
+                Value = ((OpenhabItem)element).Value;
+            }
+        }
+
+        public bool IsEqual(IOpenhabElement element)
+        {
+            return ((OpenhabItem)element).Value == this.Value;
         }
     }
 }

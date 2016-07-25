@@ -68,5 +68,10 @@ namespace openhab.net.rest.Sitemaps
         {
             throw new NotImplementedException();
         }
+
+        public bool IsEqual(IOpenhabElement element)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
