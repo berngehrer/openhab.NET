@@ -21,7 +21,7 @@ namespace openhab.net.rest.console
 
         public TestClass()
         {
-            var strategy =  new UpdateStrategy(true);
+            var strategy = new UpdateStrategy(TimeSpan.FromSeconds(3));
 
             _context = new ItemContext("192.168.178.69", 8080, strategy);
             _context.Refreshed += Context_Refreshed;
@@ -30,7 +30,7 @@ namespace openhab.net.rest.console
         public async void SwitchTest()
         {
             var tvled = await _context.GetByName<SwitchItem>("MQTT_TVLED_POW");
-            tvled.Toggle();
+            //tvled.Toggle();
         }
                 
         void Context_Refreshed(object sender, ContextRefreshedEventArgs<OpenhabItem> args)

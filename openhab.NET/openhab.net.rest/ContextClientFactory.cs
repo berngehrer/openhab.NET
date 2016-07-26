@@ -23,7 +23,7 @@ namespace openhab.net.rest
         {
             var workerClient = Create(true);
             if (workerClient != null) {
-                return new BackgroundClient(workerClient, Strategy.Interval.Milliseconds);
+                return new BackgroundClient(workerClient, (int)Strategy.Interval.TotalMilliseconds);
             }
             return null;
         }
