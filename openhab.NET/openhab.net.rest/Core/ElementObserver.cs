@@ -6,8 +6,7 @@ namespace openhab.net.rest.Core
     internal interface IElementObserver : IDisposable
     {
         void Subscribe(IElementObservable obj);
-        void Notify(IElementObservable sender);
-        void Notify(IElementObservable sender, IOpenhabElement element);
+        void Notify(IElementObservable sender, IOpenhabElement element = null);
     }
 
     internal interface IElementObservable
@@ -25,20 +24,17 @@ namespace openhab.net.rest.Core
             foreach (var obj in _subscriber)
             {
                 if (!Object.ReferenceEquals(obj, sender)) {
-                    obj.OnNotify(element);
+                    obj.OnNotify(element ?? sender as IOpenhabElement);
                 }
             }
-        }
-
-        public void Notify(IElementObservable sender)
-        {
-            Notify(sender, sender as IOpenhabElement);
         }
 
         public void Subscribe(IElementObservable obj)
         {
             if (!_subscriber.Contains(obj))
+            {
                 _subscriber.Add(obj);
+            }
         }
 
         public void Dispose()

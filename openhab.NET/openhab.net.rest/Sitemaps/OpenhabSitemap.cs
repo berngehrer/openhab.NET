@@ -44,6 +44,7 @@ namespace openhab.net.rest.Sitemaps
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler Changed;
 
         public bool Equals(OpenhabSitemap other) => this == other;
 

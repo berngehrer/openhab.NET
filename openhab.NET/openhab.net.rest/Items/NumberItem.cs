@@ -7,9 +7,7 @@ namespace openhab.net.rest.Items
     {
         internal NumberItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
-            if (IsInitialized) {
-                ValueParser.TryParse(base.Value, out _value);
-            }
+            Syncronize();
         }
 
         float _value;
@@ -20,6 +18,13 @@ namespace openhab.net.rest.Items
             {
                 _value = value;
                 Update(string.Format("{0:#.00}", value));
+            }
+        }
+
+        protected override void Syncronize()
+        {
+            if (IsInitialized) {
+                ValueParser.TryParse(base.Value, out _value);
             }
         }
     }

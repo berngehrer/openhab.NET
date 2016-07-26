@@ -1,7 +1,6 @@
 ﻿using openhab.net.rest.Core;
 using openhab.net.rest.Json;
 using System;
-using System.ComponentModel;
 using System.Linq;
 
 namespace openhab.net.rest.Items
@@ -10,7 +9,7 @@ namespace openhab.net.rest.Items
     {
         IElementObserver _observer;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler Changed;
         
 
         internal OpenhabItem(ItemObject original, IElementObserver observer)
@@ -38,8 +37,9 @@ namespace openhab.net.rest.Items
         public void OnNotify(IOpenhabElement element)
         {
             var other = element as OpenhabItem;
-            if (other?.Name == Name) {
+            if (!IsEqual(other)) {
                 Value = other.Value;
+                Syncronize();
                 FireValueChanged();
             }
         }
@@ -47,24 +47,39 @@ namespace openhab.net.rest.Items
         public bool IsEqual(IOpenhabElement element)
         {
             var other = element as OpenhabItem;
-            if (other?.Name == Name) {
+            if (Equals(other)) {
                 return Value == other.Value;
             }
             return true;
         }
 
+        public override bool Equals(object obj)
+        {
+            var other = obj as OpenhabItem;
+            return other?.Name == Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
 
         protected void Update(string value)
         {
-            Value = value;
-            FireValueChanged();
-            _observer?.Notify(this);
+            if (Value != value)
+            {
+                Value = value;
+                FireValueChanged();
+                _observer?.Notify(this);
+            }
         }
 
-        void FireValueChanged()
+        protected void FireValueChanged()
         {
-            var args = new PropertyChangedEventArgs(nameof(Value));
-            PropertyChanged?.Invoke(this, args);
+            Changed?.Invoke(this, EventArgs.Empty);
         }
+
+        protected virtual void Syncronize() { }
     }
 }

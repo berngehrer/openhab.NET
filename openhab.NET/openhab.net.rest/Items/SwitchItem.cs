@@ -10,7 +10,7 @@ namespace openhab.net.rest.Items
         
         internal SwitchItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
-            _value = IsInitialized && base.Value.Equals(OnState);
+            Syncronize();
         }
 
         bool _value;
@@ -23,7 +23,12 @@ namespace openhab.net.rest.Items
                 Update(value ? OnState : OffState);
             }
         }
-        
+
+        protected override void Syncronize()
+        {
+            _value = IsInitialized && base.Value.Equals(OnState);
+        }
+
         public void Toggle()
         {
             Value = !Value;
