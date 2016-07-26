@@ -1,4 +1,5 @@
-﻿using openhab.net.rest.DataSource;
+﻿using openhab.net.rest.Core;
+using openhab.net.rest.DataSource;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -9,11 +10,9 @@ namespace openhab.net.rest
     public abstract class OpenhabContext<T> : IElementObservable, IDisposable where T : IOpenhabElement
     {
         ObjectStateManager<T> _objectManager;
-        CancellationTokenSource _cancelSource;
 
         public event ContextRefreshedHandler<T> Refreshed;
-
-
+        
         protected OpenhabContext(ClientSettings settings, UpdateStrategy strategy)
         {
             Observer.Subscribe(this);
@@ -24,49 +23,36 @@ namespace openhab.net.rest
 
 
         internal ContextClientFactory ClientFactory { get; }
-
         internal ObjectStateManager<T> ObjectManager => _objectManager;
-
-        internal IElementObserver Observer { get; } = new ElementObserver();
-        
+        internal IElementObserver Observer { get; } = new ElementObserver();        
         public bool IsSyncronized => ObjectManager.HasBackgroundWorker;
 
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAll(CancellationToken? token = null)
         {
-            _cancelSource = new CancellationTokenSource();
-            return await ObjectManager.GetAll(_cancelSource.Token);
+            return await ObjectManager.GetAll(token ?? CancellationToken.None);
         }
 
-        public async Task<T> GetByName(string name)
+        public async Task<T> GetByName(string name, CancellationToken? token = null)
         {
-            _cancelSource = new CancellationTokenSource();
-            return await ObjectManager.GetByName(name, _cancelSource.Token);
+            return await ObjectManager.GetByName(name, token ?? CancellationToken.None);
         }
                 
-        public void Cancel()
-        {
-            if (!_cancelSource?.IsCancellationRequested ?? false)
-            {
-                _cancelSource.Cancel(false);
-            }
-        }
-
-        public void Dispose()
-        {
-            _cancelSource?.Cancel(false);
-            _objectManager.Dispose();
-        }
-
-        internal abstract IDataSource<T> CreateDataSource(OpenhabClient client = null);
-
 
         public void OnNotify(IOpenhabElement element)
         {
             if (element?.GetType().Is<T>() ?? false)
             {
-                Refreshed?.Invoke(this, new ContextRefreshedEventArgs<T>((T)element));
+                var args = new ContextRefreshedEventArgs<T>((T)element);
+                Refreshed?.Invoke(this, args);
             }
         }
+
+        public void Dispose()
+        {
+            _objectManager.Dispose();
+        }
+
+        internal abstract IDataSource<T> CreateDataSource(OpenhabClient client = null);
     }
 }

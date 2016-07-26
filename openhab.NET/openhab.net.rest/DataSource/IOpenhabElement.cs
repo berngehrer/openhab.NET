@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace openhab.net.rest
+namespace openhab.net.rest.DataSource
 {
     public interface IOpenhabElement : INotifyPropertyChanged
     {

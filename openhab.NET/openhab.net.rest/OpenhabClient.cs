@@ -26,22 +26,26 @@ namespace openhab.net.rest
         public ClientSettings Settings { get; }
 
 
-        public Task<bool> SendCommand(MessageHandler message)
+        public async Task<bool> SendCommand(MessageHandler message)
         {
-            return SendWithSemaphore(
-                () => _proxy.SendMessage(message),
-                message.GetToken()
-            );
+            return await _proxy.SendMessage(message);
+            //return SendWithSemaphore(
+            //    () => _proxy.SendMessage(message),
+            //    message.GetToken()
+            //);
         }
 
-        public Task<T> SendRequest<T>(MessageHandler message) where T : class, new()
+        public async Task<T> SendRequest<T>(MessageHandler message) where T : class, new()
         {
-            return SendWithSemaphore(async () =>
-            {
-                var json = await _proxy.ReadAsString(message);
-                return JsonConvert.DeserializeObject<T>(json);
-            },
-            message.GetToken());
+            var json = await _proxy.ReadAsString(message);
+            return JsonConvert.DeserializeObject<T>(json);
+
+            //return SendWithSemaphore(async () =>
+            //{
+            //    var json = await _proxy.ReadAsString(message);
+            //    return JsonConvert.DeserializeObject<T>(json);
+            //},
+            //message.GetToken());
         }
 
         async Task<T> SendWithSemaphore<T>(Func<Task<T>> task, CancellationToken token)

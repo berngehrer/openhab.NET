@@ -9,8 +9,6 @@ namespace openhab.net.rest
     {
         public static object GetValue(this Enum e) => e.GetAttribute<FieldValueAttribute>()?.Value;
 
-        public static bool TryGetValue(this Enum e, out object obj) => (obj = GetValue(e)) != null;
-
 
         public static Dictionary<string,T> ToDictionary<T>() where T : struct
         {

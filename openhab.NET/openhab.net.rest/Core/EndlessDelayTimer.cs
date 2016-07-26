@@ -8,7 +8,7 @@ namespace openhab.net.rest.Core
     {
         T _state;
         int _delay;
-        
+
         public EndlessDelayTimer(T state, int delay)
         {
             _state = state;
@@ -17,17 +17,18 @@ namespace openhab.net.rest.Core
 
         public void Start(Action<T> callback)
         {
-            for (;;)
+            Task.Run(() =>
             {
-                Task.Delay(_delay, Token).ContinueWith(_ => callback?.Invoke(_state),
-                    CancellationToken.None,
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Default
-                );
-                if (IsCancellationRequested) {
-                    break;
+                for (;;)
+                {
+                    Task.Delay(_delay, Token).Wait();
+                    callback.Invoke(_state);
+                    if (IsCancellationRequested) {
+                        break;
+                    }
                 }
-            }
+            },
+            Token);
         }
 
         public new void Dispose()
@@ -37,8 +38,9 @@ namespace openhab.net.rest.Core
         }
     }
 
-    internal sealed class ClientBackgroundWorker : EndlessDelayTimer<OpenhabClient>
+
+    internal sealed class BackgroundClient : EndlessDelayTimer<OpenhabClient>
     {
-        public ClientBackgroundWorker(OpenhabClient state, int delay)  : base(state, delay) { }
+        public BackgroundClient(OpenhabClient state, int delay) : base(state, delay) { }
     }
 }

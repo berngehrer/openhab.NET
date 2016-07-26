@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using openhab.net.rest.Items;
 
 namespace openhab.net.rest.console
 {
@@ -10,16 +6,28 @@ namespace openhab.net.rest.console
     {
         static void Main(string[] args)
         {
-            var settings = new ClientSettings("");
-            using (var context = new ItemContext(settings))
-            {
-                context.Refreshed += Context_Refreshed;
-            }
+            //using (var context = new ItemContext(new ClientSettings("192.168.178.69")))
+            //{
+            //    var task = context.GetByName("MQTT_TVLED_POW");
+            //    task.Wait();
+            //    var tvled = task.Result as Items.SwitchItem;
+            //    tvled.Value = !tvled.Value;
+            //}
+            SwitchTest();
+            System.Console.ReadLine();
         }
 
-        private static void Context_Refreshed(object sender, ContextRefreshedEventArgs<Items.OpenhabItem> args)
+        static async void SwitchTest()
         {
-            throw new NotImplementedException();
+            using (var context = new ItemContext("192.168.178.69", 8080))
+            {
+                //var tvled = await context.GetByName<SwitchItem>("MQTT_TVLED_POW");
+                //tvled.Toggle();
+
+                var item = await context.GetByName("MQTT_TVLED_POW");
+                var tvled = item as SwitchItem;
+                tvled.Value = !tvled.Value; 
+            }
         }
     }
 }

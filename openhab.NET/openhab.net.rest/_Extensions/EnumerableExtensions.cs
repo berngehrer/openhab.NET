@@ -10,8 +10,7 @@ namespace openhab.net.rest
         public static T GetOrAdd<T>(this IList<T> list, T item, Predicate<T> comparer)
         {
             var existing = list.FirstOrDefault(x => comparer(x));
-            if (existing == null)
-            {
+            if (existing == null) {
                 list.Add(item);
                 return item;
             }

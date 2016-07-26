@@ -1,4 +1,5 @@
-﻿using openhab.net.rest.Http;
+﻿using openhab.net.rest.Core;
+using openhab.net.rest.Http;
 using openhab.net.rest.Items;
 using openhab.net.rest.Json;
 using System.Collections.Generic;
@@ -63,11 +64,11 @@ namespace openhab.net.rest.DataSource
             var message = new MessageHandler
             {
                 CancelToken = token,
-                Method = HttpMethod.Put,
+                Method = HttpMethod.Post,
                 MimeType = MIMEType.PlainText,
                 Content = element.ToString(),
                 Collection = TargetCollection,
-                RelativePath = $"{element.Name}/state"
+                RelativePath = element.Name
             };
             return await UpdateState(message);
         }
@@ -90,9 +91,7 @@ namespace openhab.net.rest.DataSource
             switch (item.ItemType)
             {
                 case ItemType.Call:
-                    var a = new CallItem(item, _observer);
-                    _observer.Subscribe(a);
-                    return a;
+                    return new CallItem(item, _observer);
                 case ItemType.Color:
                     return new ColorItem(item, _observer);
                 case ItemType.Contact:

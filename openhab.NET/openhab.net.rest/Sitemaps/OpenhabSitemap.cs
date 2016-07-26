@@ -1,4 +1,5 @@
-﻿using openhab.net.rest.Json;
+﻿using openhab.net.rest.DataSource;
+using openhab.net.rest.Json;
 using System;
 using System.ComponentModel;
 

@@ -1,4 +1,6 @@
-﻿using openhab.net.rest.Json;
+﻿using openhab.net.rest.Core;
+using openhab.net.rest.DataSource;
+using openhab.net.rest.Json;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -11,14 +13,14 @@ namespace openhab.net.rest.Items
 
         public event PropertyChangedEventHandler PropertyChanged;
         
+
         internal OpenhabItem(ItemObject original, IElementObserver observer)
         {
             Name = original.Name;
             Value = original.State;
             Type = original.ItemType;
             Link = new Uri(original.Link);
-
-            (_observer = observer).Subscribe(this);
+            (_observer = observer)?.Subscribe(this);
         }
 
         public Uri Link { get; }
@@ -37,7 +39,8 @@ namespace openhab.net.rest.Items
         protected void Update(string value)
         {
             Value = value;
-            _observer.Notify(this, this);
+            _observer?.Notify(this);
+            FireValueChanged();
         }
 
         protected void FireValueChanged()
@@ -48,15 +51,20 @@ namespace openhab.net.rest.Items
 
         public void OnNotify(IOpenhabElement element)
         {
-            if (Object.ReferenceEquals(this, element))
-            {
-                Value = ((OpenhabItem)element).Value;
+            var other = element as OpenhabItem;
+            if (other?.Name == Name) {
+                Value = other.Value;
+                FireValueChanged();
             }
         }
 
         public bool IsEqual(IOpenhabElement element)
         {
-            return ((OpenhabItem)element).Value == this.Value;
+            var other = element as OpenhabItem;
+            if (other?.Name == Name) {
+                return Value == other.Value;
+            }
+            return true;
         }
     }
 }

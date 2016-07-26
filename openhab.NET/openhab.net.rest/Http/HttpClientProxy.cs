@@ -33,11 +33,14 @@ namespace openhab.net.rest.Http
             }
         }
 
-        public async Task<bool> SendMessage(MessageHandler message)
+        public Task<bool> SendMessage(MessageHandler message)
         {
-            using (var response = await GetResponse(message))
+            // TODO: Async problem!
+            var task = GetResponse(message);
+            task.Wait();
+            using (var response = task.Result) 
             {
-                return response.IsSuccessStatusCode;
+                return Task.FromResult(response.IsSuccessStatusCode);
             }
         }
 
@@ -45,13 +48,11 @@ namespace openhab.net.rest.Http
         {
             var request = CreateRequest(message);
 
-            Task<HttpResponseMessage> responseTask;
             if (message.CancelToken.HasValue) {
-                responseTask = _innerClient.SendAsync(request, message.CancelToken.Value);
+                return _innerClient.SendAsync(request, message.CancelToken.Value);
             } else {
-                responseTask = _innerClient.SendAsync(request);
+                return _innerClient.SendAsync(request);
             }
-            return responseTask;
         }
 
         HttpClient CreateClient(ClientSettings settings)

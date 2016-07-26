@@ -1,8 +1,22 @@
-﻿using System;
+﻿using openhab.net.rest.DataSource;
+using System;
 using System.Collections.Generic;
 
-namespace openhab.net.rest
+namespace openhab.net.rest.Core
 {
+    internal interface IElementObserver : IDisposable
+    {
+        void Subscribe(IElementObservable obj);
+        void Notify(IElementObservable sender);
+        void Notify(IElementObservable sender, IOpenhabElement element);
+    }
+
+    internal interface IElementObservable
+    {
+        void OnNotify(IOpenhabElement element);
+    }
+
+
     internal class ElementObserver : IElementObserver
     {
         List<IElementObservable> _subscriber = new List<IElementObservable>();
@@ -15,6 +29,11 @@ namespace openhab.net.rest
                     obj.OnNotify(element);
                 }
             }
+        }
+
+        public void Notify(IElementObservable sender)
+        {
+            Notify(sender, sender as IOpenhabElement);
         }
 
         public void Subscribe(IElementObservable obj)

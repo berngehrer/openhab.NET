@@ -19,10 +19,7 @@ namespace openhab.net.rest.Items
             set
             {
                 _value = value;
-                //if (ShadowUpdate(string.Format("{0:#.00}", value)))
-                //{
-                //    FireValueChanged();
-                //}
+                Update(string.Format("{0:#.00}", value));
             }
         }
     }

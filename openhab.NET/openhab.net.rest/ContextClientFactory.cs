@@ -14,16 +14,16 @@ namespace openhab.net.rest
         public ClientSettings Settings { get; }
         public UpdateStrategy Strategy { get; }
 
-        public OpenhabClient Create()
+        public OpenhabClient CreateClient()
         {
-            return Create(false);
+            return new OpenhabClient(Settings);
         }
 
-        public ClientBackgroundWorker CreateWorker()
+        public BackgroundClient CreateWorker()
         {
             var workerClient = Create(true);
             if (workerClient != null) {
-                return new ClientBackgroundWorker(workerClient, Strategy.Interval.Milliseconds);
+                return new BackgroundClient(workerClient, Strategy.Interval.Milliseconds);
             }
             return null;
         }

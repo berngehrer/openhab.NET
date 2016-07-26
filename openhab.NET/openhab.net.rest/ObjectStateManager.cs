@@ -9,13 +9,15 @@ namespace openhab.net.rest
 {
     internal class ObjectStateManager<T> : IElementObservable, IDisposable where T : IOpenhabElement
     {
+        object _lockObj = new object();
+
+        BackgroundClient _worker;
+        OpenhabContext<T> _context;
+
         IDataSource<T> _elementSource;
         List<T> _elementContainer = new List<T>();
         
-        OpenhabContext<T> _context;
-        ClientBackgroundWorker _worker;
-        
-        
+
         public ObjectStateManager(OpenhabContext<T> context) 
         {
             _context = context;
@@ -28,14 +30,12 @@ namespace openhab.net.rest
         }
 
         public bool HasBackgroundWorker => _worker != null;
-        
 
-        void ElementSyncWorker(OpenhabClient client)
+
+        public async void OnNotify(IOpenhabElement element)
         {
-            using (var source = _context.CreateDataSource(client))
-            {
-                var elements = source.GetAll().WaitSynchronously(_worker.Token);
-                ProcessAll(elements, _worker.Token);
+            if (element.GetType().Is<T>()) {
+                await _elementSource.UpdateState((T)element);
             }
         }
 
@@ -51,29 +51,42 @@ namespace openhab.net.rest
             return ProcessElement(element);
         }
 
+        void ElementSyncWorker(OpenhabClient client)
+        {
+            using (var source = _context.CreateDataSource(client))
+            {
+                var task = _elementSource.GetAll(_worker.Token);
+                task.RunSynchronously();
+                ProcessAll(task.Result, _worker.Token);
+            }
+        }
 
         IEnumerable<T> ProcessAll(IEnumerable<T> collection, CancellationToken token)
         {
-            if (collection != null) {
-                foreach (var item in collection)
-                {
-                    if (!token.IsCancellationRequested) {
-                        yield return ProcessElement(item);
+            lock (_lockObj)
+            {
+                if (collection != null) {
+                    foreach (var item in collection)
+                    {
+                        if (!token.IsCancellationRequested) {
+                            yield return ProcessElement(item);
+                        }
+                        else break;
                     }
-                    else break;
                 }
             }
         }
 
         T ProcessElement(T element)
         {
-            // TODO: Add Semaphore
-            var storeElement = _elementContainer.GetOrAdd(element, x => x.Name == element?.Name);
-            if (!storeElement.IsEqual(element))
+            lock (_lockObj)
             {
-                _context.Observer.Notify(this, element);
+                var storeElement = _elementContainer.GetOrAdd(element, x => x.Name == element?.Name);
+                if (!storeElement.IsEqual(element)) {
+                    _context.Observer.Notify(this, element);
+                }
+                return storeElement;
             }
-            return storeElement;
         }
 
         public void Dispose()
@@ -81,11 +94,6 @@ namespace openhab.net.rest
             _elementContainer.Clear();
             _elementSource.Dispose();
             _worker?.Cancel(false);
-        }
-
-        public async void OnNotify(IOpenhabElement element)
-        {
-            await _elementSource.UpdateState((T)element);
         }
     }
 }
