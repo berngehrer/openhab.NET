@@ -1,5 +1,4 @@
 ﻿using openhab.net.rest.Core;
-using openhab.net.rest.DataSource;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -21,7 +20,7 @@ namespace openhab.net.rest
         public ObjectStateManager(OpenhabContext<T> context) 
         {
             _context = context;
-            _context.Observer.Subscribe(this);
+            _context.ItemObserver.Subscribe(this);
 
             _elementSource = context.CreateDataSource();
 
@@ -51,13 +50,12 @@ namespace openhab.net.rest
             return ProcessElement(element);
         }
 
-        void ElementSyncWorker(OpenhabClient client)
+        async void ElementSyncWorker(OpenhabClient client)
         {
             using (var source = _context.CreateDataSource(client))
             {
-                var task = _elementSource.GetAll(_worker.Token);
-                task.RunSynchronously();
-                ProcessAll(task.Result, _worker.Token);
+                var result = await _elementSource.GetAll(_worker.Token);
+                ProcessAll(result, _worker.Token);
             }
         }
 
@@ -65,15 +63,17 @@ namespace openhab.net.rest
         {
             lock (_lockObj)
             {
+                var returnList = new List<T>();
                 if (collection != null) {
                     foreach (var item in collection)
                     {
                         if (!token.IsCancellationRequested) {
-                            yield return ProcessElement(item);
+                            returnList.Add(ProcessElement(item));
                         }
                         else break;
                     }
                 }
+                return returnList;
             }
         }
 
@@ -83,7 +83,7 @@ namespace openhab.net.rest
             {
                 var storeElement = _elementContainer.GetOrAdd(element, x => x.Name == element?.Name);
                 if (!storeElement.IsEqual(element)) {
-                    _context.Observer.Notify(this, element);
+                    _context.ItemObserver.Notify(this, element);
                 }
                 return storeElement;
             }

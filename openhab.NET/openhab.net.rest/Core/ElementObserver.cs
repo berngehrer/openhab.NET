@@ -1,5 +1,4 @@
-﻿using openhab.net.rest.DataSource;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace openhab.net.rest.Core

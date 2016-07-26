@@ -18,17 +18,17 @@ namespace openhab.net.rest.Core
         public void Start(Action<T> callback)
         {
             Task.Run(() =>
-            {
-                for (;;)
-                {
-                    Task.Delay(_delay, Token).Wait();
-                    callback.Invoke(_state);
-                    if (IsCancellationRequested) {
-                        break;
-                    }
-                }
-            },
-            Token);
+             {
+                 for (;;)
+                 {
+                     Task.Delay(_delay, Token).Wait();
+                     callback.Invoke(_state);
+                     if (IsCancellationRequested) {
+                         break;
+                     }
+                 }
+             },
+             Token);
         }
 
         public new void Dispose()

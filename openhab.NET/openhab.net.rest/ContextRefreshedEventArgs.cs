@@ -1,5 +1,4 @@
-﻿using openhab.net.rest.DataSource;
-using System;
+﻿using System;
 
 namespace openhab.net.rest
 {

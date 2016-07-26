@@ -3,9 +3,9 @@ using System.Net;
 
 namespace openhab.net.rest
 {
-    public class ClientSettings 
+    public class OpenhabSettings 
     {
-        public ClientSettings(string host, int port = 8080)
+        public OpenhabSettings(string host, int port = 8080)
         {
             Host = host;
             Port = port;

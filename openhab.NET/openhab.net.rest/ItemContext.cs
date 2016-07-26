@@ -1,5 +1,4 @@
-﻿using openhab.net.rest.DataSource;
-using openhab.net.rest.Items;
+﻿using openhab.net.rest.Items;
 
 namespace openhab.net.rest
 {
@@ -11,11 +10,11 @@ namespace openhab.net.rest
         }
 
         public ItemContext(string host, int port = 8080, UpdateStrategy stategy = null)
-            : this(new ClientSettings(host, port), stategy)
+            : this(new OpenhabSettings(host, port), stategy)
         {
         }
 
-        public ItemContext(ClientSettings settings, UpdateStrategy strategy = null) 
+        public ItemContext(OpenhabSettings settings, UpdateStrategy strategy = null) 
             : base(settings, strategy ?? UpdateStrategy.Default)
         {
         }
@@ -24,9 +23,9 @@ namespace openhab.net.rest
         internal override IDataSource<OpenhabItem> CreateDataSource(OpenhabClient client = null)
         {
             if (client == null) {
-                return new ItemSourceAdapter(Observer, ClientFactory.CreateClient());
+                return new ItemSourceAdapter(ItemObserver, ClientFactory.CreateClient());
             } else {
-                return new ItemSourceAdapter(Observer, client, disposeClient: false);
+                return new ItemSourceAdapter(ItemObserver, client, disposeClient: false);
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using openhab.net.rest.Core;
-using openhab.net.rest.DataSource;
 using openhab.net.rest.Json;
 using System;
 using System.ComponentModel;
@@ -36,19 +35,6 @@ namespace openhab.net.rest.Items
         public override string ToString() => Value;
         
 
-        protected void Update(string value)
-        {
-            Value = value;
-            _observer?.Notify(this);
-            FireValueChanged();
-        }
-
-        protected void FireValueChanged()
-        {
-            var args = new PropertyChangedEventArgs(nameof(Value));
-            PropertyChanged?.Invoke(this, args);
-        }
-
         public void OnNotify(IOpenhabElement element)
         {
             var other = element as OpenhabItem;
@@ -65,6 +51,20 @@ namespace openhab.net.rest.Items
                 return Value == other.Value;
             }
             return true;
+        }
+
+
+        protected void Update(string value)
+        {
+            Value = value;
+            FireValueChanged();
+            _observer?.Notify(this);
+        }
+
+        void FireValueChanged()
+        {
+            var args = new PropertyChangedEventArgs(nameof(Value));
+            PropertyChanged?.Invoke(this, args);
         }
     }
 }

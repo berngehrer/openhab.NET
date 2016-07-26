@@ -37,12 +37,12 @@
     <Compile Include="ContextClientFactory.cs" />
     <Compile Include="ContextRefreshedEventArgs.cs" />
     <Compile Include="Core\IdProvider.cs" />
-    <Compile Include="DataSource\ItemSourceAdapter.cs" />
+    <Compile Include="_DataSource\ItemSourceAdapter.cs" />
     <Compile Include="Core\ElementObserver.cs" />
     <Compile Include="Http\PoolingSession.cs" />
     <Compile Include="Core\ValueParser.cs" />
-    <Compile Include="DataSource\IDataSource.cs" />
-    <Compile Include="DataSource\IOpenhabElement.cs" />
+    <Compile Include="_DataSource\IDataSource.cs" />
+    <Compile Include="_DataSource\IOpenhabElement.cs" />
     <Compile Include="ItemContext.cs" />
     <Compile Include="ObjectStateManager.cs" />
     <Compile Include="OpenhabContext.cs" />
@@ -63,7 +63,7 @@
     <Compile Include="Http\MessageHandler.cs" />
     <Compile Include="Core\FieldValueAttribute.cs" />
     <Compile Include="Json\ItemConverter.cs" />
-    <Compile Include="Http\ClientSettings.cs" />
+    <Compile Include="OpenhabSettings.cs" />
     <Compile Include="Items\ItemType.cs" />
     <Compile Include="Http\MIMEType.cs" />
     <Compile Include="Docs\OpenhabSitemapClient.cs" />

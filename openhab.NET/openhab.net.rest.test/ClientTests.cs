@@ -15,10 +15,10 @@ namespace openhab.net.rest.test
         {
             int port = 8080;
             string host = "192.168.178.69";
-            Settings = new ClientSettings(host, port);
+            Settings = new OpenhabSettings(host, port);
         }
 
-        ClientSettings Settings { get; }
+        OpenhabSettings Settings { get; }
 
 
         [TestMethod]
@@ -117,21 +117,21 @@ namespace openhab.net.rest.test
             .GetAwaiter().GetResult();
         }
 
-        //[TestMethod, Timeout(TestTimeout.Infinite)]
-        //public void TestHttpClientProxyPooling()
-        //{
-        //    Task.Run(async () =>
-        //    {
-        //        var pooling = new PoolingSession(1234);
-        //        var message = new MessageHandler(SiteCollection.Items, relativePath: TestItem);
+        [TestMethod, Timeout(TestTimeout.Infinite)]
+        public void TestHttpClientProxyPooling()
+        {
+            Task.Run(async () =>
+            {
+                var pooling = new PoolingSession(1234);
+                var message = new MessageHandler(SiteCollection.Items, relativePath: TestItem);
 
-        //        using (var client = new HttpClientProxy(Settings, pooling))
-        //        {
-        //            var json = await client.ReadAsString(message);
-        //            Assert.IsFalse(string.IsNullOrEmpty(json));
-        //        }
-        //    })
-        //    .GetAwaiter().GetResult();
-        //}
+                using (var client = new HttpClientProxy(Settings, pooling))
+                {
+                    var json = await client.ReadAsString(message);
+                    Assert.IsFalse(string.IsNullOrEmpty(json));
+                }
+            })
+            .GetAwaiter().GetResult();
+        }
     }
 }

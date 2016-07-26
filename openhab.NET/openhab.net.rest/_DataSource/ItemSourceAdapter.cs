@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace openhab.net.rest.DataSource
+namespace openhab.net.rest
 {
     internal class ItemSourceAdapter : IDataSource<OpenhabItem>
     {

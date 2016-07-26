@@ -1,4 +1,5 @@
 ﻿using openhab.net.rest.Items;
+using System;
 
 namespace openhab.net.rest.console
 {
@@ -6,28 +7,41 @@ namespace openhab.net.rest.console
     {
         static void Main(string[] args)
         {
-            //using (var context = new ItemContext(new ClientSettings("192.168.178.69")))
-            //{
-            //    var task = context.GetByName("MQTT_TVLED_POW");
-            //    task.Wait();
-            //    var tvled = task.Result as Items.SwitchItem;
-            //    tvled.Value = !tvled.Value;
-            //}
-            SwitchTest();
-            System.Console.ReadLine();
+            using (var a = new TestClass())
+            {
+                a.SwitchTest();
+                Console.ReadLine();
+            }
+        }
+    }
+
+    class TestClass : IDisposable
+    {
+        ItemContext _context;
+
+        public TestClass()
+        {
+            var strategy =  new UpdateStrategy(true);
+
+            _context = new ItemContext("192.168.178.69", 8080, strategy);
+            _context.Refreshed += Context_Refreshed;
         }
 
-        static async void SwitchTest()
+        public async void SwitchTest()
         {
-            using (var context = new ItemContext("192.168.178.69", 8080))
-            {
-                //var tvled = await context.GetByName<SwitchItem>("MQTT_TVLED_POW");
-                //tvled.Toggle();
+            var tvled = await _context.GetByName<SwitchItem>("MQTT_TVLED_POW");
+            tvled.Toggle();
+        }
+                
+        void Context_Refreshed(object sender, ContextRefreshedEventArgs<OpenhabItem> args)
+        {
+            Console.WriteLine(args.Element.Name);
+        }
 
-                var item = await context.GetByName("MQTT_TVLED_POW");
-                var tvled = item as SwitchItem;
-                tvled.Value = !tvled.Value; 
-            }
+        public void Dispose()
+        {
+            _context.Refreshed -= Context_Refreshed;
+            _context.Dispose();
         }
     }
 }

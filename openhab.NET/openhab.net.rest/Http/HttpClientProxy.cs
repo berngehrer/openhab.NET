@@ -12,12 +12,12 @@ namespace openhab.net.rest.Http
         HttpClient _innerClient;
         PoolingSession _pooling;
         
-        public HttpClientProxy(ClientSettings settings)
+        public HttpClientProxy(OpenhabSettings settings)
             : this(settings, PoolingSession.False)
         {
         }
 
-        public HttpClientProxy(ClientSettings settings, PoolingSession pooling)
+        public HttpClientProxy(OpenhabSettings settings, PoolingSession pooling)
         {
             _pooling = pooling;
             _innerClient = CreateClient(settings);
@@ -55,7 +55,7 @@ namespace openhab.net.rest.Http
             }
         }
 
-        HttpClient CreateClient(ClientSettings settings)
+        HttpClient CreateClient(OpenhabSettings settings)
         {
             var httpHandler = new HttpClientHandler
             {

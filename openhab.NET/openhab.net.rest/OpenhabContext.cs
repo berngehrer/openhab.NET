@@ -1,5 +1,4 @@
 ﻿using openhab.net.rest.Core;
-using openhab.net.rest.DataSource;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,9 +12,9 @@ namespace openhab.net.rest
 
         public event ContextRefreshedHandler<T> Refreshed;
         
-        protected OpenhabContext(ClientSettings settings, UpdateStrategy strategy)
+        protected OpenhabContext(OpenhabSettings settings, UpdateStrategy strategy)
         {
-            Observer.Subscribe(this);
+            ItemObserver.Subscribe(this);
 
             ClientFactory = new ContextClientFactory(settings, strategy);
             _objectManager = new ObjectStateManager<T>(this);
@@ -24,7 +23,7 @@ namespace openhab.net.rest
 
         internal ContextClientFactory ClientFactory { get; }
         internal ObjectStateManager<T> ObjectManager => _objectManager;
-        internal IElementObserver Observer { get; } = new ElementObserver();        
+        internal IElementObserver ItemObserver { get; } = new ElementObserver();        
         public bool IsSyncronized => ObjectManager.HasBackgroundWorker;
 
 
@@ -37,7 +36,13 @@ namespace openhab.net.rest
         {
             return await ObjectManager.GetByName(name, token ?? CancellationToken.None);
         }
-                
+
+        public async Task<U> GetByName<U>(string name, CancellationToken? token = null) where U : T
+        {
+            var result = await GetByName(name, token);
+            return (U)result;
+        }
+
 
         public void OnNotify(IOpenhabElement element)
         {

@@ -5,13 +5,13 @@ namespace openhab.net.rest
 {
     internal class ContextClientFactory 
     {
-        public ContextClientFactory(ClientSettings settings, UpdateStrategy strategy)
+        public ContextClientFactory(OpenhabSettings settings, UpdateStrategy strategy)
         {
             Settings = settings;
             Strategy = strategy ?? UpdateStrategy.Default;
         }
 
-        public ClientSettings Settings { get; }
+        public OpenhabSettings Settings { get; }
         public UpdateStrategy Strategy { get; }
 
         public OpenhabClient CreateClient()

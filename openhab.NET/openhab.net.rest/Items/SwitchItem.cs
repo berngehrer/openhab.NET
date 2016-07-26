@@ -23,9 +23,10 @@ namespace openhab.net.rest.Items
                 Update(value ? OnState : OffState);
             }
         }
-
-        public void TurnOn() { }
-        public void TurnOff() { }
-        public void Toggle() { }
+        
+        public void Toggle()
+        {
+            Value = !Value;
+        }
     }
 }

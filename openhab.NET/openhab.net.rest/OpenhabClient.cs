@@ -10,9 +10,9 @@ namespace openhab.net.rest
     internal class OpenhabClient : IDisposable
     {
         HttpClientProxy _proxy;
-        SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        //SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        public OpenhabClient(ClientSettings settings, bool pooling = false)
+        public OpenhabClient(OpenhabSettings settings, bool pooling = false)
         {
             Settings = settings;
 
@@ -23,7 +23,7 @@ namespace openhab.net.rest
             _proxy = new HttpClientProxy(settings, poolingClass);
         }
 
-        public ClientSettings Settings { get; }
+        public OpenhabSettings Settings { get; }
 
 
         public async Task<bool> SendCommand(MessageHandler message)
@@ -48,21 +48,21 @@ namespace openhab.net.rest
             //message.GetToken());
         }
 
-        async Task<T> SendWithSemaphore<T>(Func<Task<T>> task, CancellationToken token)
-        {
-            await _semaphore.WaitAsync(token);
-            return await task().ContinueWith(t =>
-            {
-                _semaphore.Release();
-                return t.GetAwaiter().GetResult();
-            },
-            TaskContinuationOptions.ExecuteSynchronously);
-        }
+        //async Task<T> SendWithSemaphore<T>(Func<Task<T>> task, CancellationToken token)
+        //{
+        //    await _semaphore.WaitAsync(token);
+        //    return await task().ContinueWith(t =>
+        //    {
+        //        _semaphore.Release();
+        //        return t.GetAwaiter().GetResult();
+        //    },
+        //    TaskContinuationOptions.ExecuteSynchronously);
+        //}
 
         public void Dispose()
         {
             _proxy.Dispose();
-            _semaphore.Dispose();
+            //_semaphore.Dispose();
         }
     }
 }
