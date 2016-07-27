@@ -1,31 +1,47 @@
 ﻿using openhab.net.rest.Core;
 using openhab.net.rest.Json;
+using System;
 
 namespace openhab.net.rest.Items
 {
     public class ContactItem : OpenhabItem
     {
-        const string OpenState = "open";
-        const string ClosedState = "close";
+        const string OpenState = "OPEN";
+        const string ClosedState = "CLOSE";
 
         internal ContactItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
-            if (IsInitialized) {
-                _value = StringToValue();
-            }
         }
 
 
         bool _value;
-        //public new bool Value
-        //{
-        //    get { return _value; }
-        //    set { _value = value; ShadowUpdate(ValueToString()); }
-        //}
+        public new bool Value
+        {
+            get { return _value; }
+            set { _value = value; FromNative(value); }
+        }
+
+        public void Toggle()
+        {
+            Value = !Value;
+        }
 
 
-        bool StringToValue() => base.Value.Equals(OpenState);
+        protected override void Syncronize()
+        {
+            if (IsInitialized) {
+                _value = base.Value.Equals(OpenState, StringComparison.CurrentCultureIgnoreCase);
+            }
+        }
 
-        //string ValueToString() => (Value) ? OpenState : ClosedState;
+        public override void FromNative(object obj)
+        {
+            if (obj is bool)
+            {
+                Update((bool)obj ? OpenState : ClosedState);
+            }
+        }
+
+        public override object ToNative() => _value;
     }
 }

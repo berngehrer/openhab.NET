@@ -16,10 +16,11 @@ namespace openhab.net.rest.Items
         internal OpenhabItem(ItemObject original, IElementObserver observer)
         {
             Name = original.Name;
-            _value = original.State;
+            _value = original?.State;
             Type = original.ItemType;
             Link = new Uri(original.Link);
             (_observer = observer)?.Subscribe(this);
+            Syncronize();
         }
 
         public Uri Link { get; }
@@ -29,21 +30,11 @@ namespace openhab.net.rest.Items
 
         public bool IsInitialized
         {
-            get { return !(new[]{ "", "Undefined", "Uninitialized" }).Contains(Value); }
+            get { return Value != null && !(new[]{ "", "Undefined", "Uninitialized" }).Contains(Value); }
         }
         
         public override string ToString() => Value;
         
-
-        public void OnNotify(IOpenhabElement element)
-        {
-            var other = element as OpenhabItem;
-            if (!IsEqual(other)) {
-                _value = other.Value;
-                Syncronize();
-                FireValueChanged();
-            }
-        }
 
         public bool IsEqual(IOpenhabElement element)
         {
@@ -65,18 +56,28 @@ namespace openhab.net.rest.Items
             return Name.GetHashCode();
         }
 
-
-        public void FromNative(object obj)
+        protected void FireValueChanged()
         {
-            Update((bool)obj ? "ON" : "OFF");
             Syncronize();
+            Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        public object ToNative()
+        /// <summary>
+        /// Update from Observer
+        /// </summary>
+        public void OnNotify(IOpenhabElement element)
         {
-            return IsInitialized && Value.Equals("ON");
+            var other = element as OpenhabItem;
+            if (!IsEqual(other))
+            {
+                _value = other.Value;
+                FireValueChanged();
+            }
         }
 
+        /// <summary>
+        /// Update from inheritance object
+        /// </summary>
         protected void Update(string value)
         {
             if (Value != value)
@@ -85,13 +86,10 @@ namespace openhab.net.rest.Items
                 FireValueChanged();
                 _observer?.Notify(this);
             }
-        }
+        }        
 
-        protected void FireValueChanged()
-        {
-            Changed?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void Syncronize() { }
+        protected abstract void Syncronize();
+        public abstract void FromNative(object obj);
+        public abstract object ToNative();
     }
 }

@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="ContextClientFactory.cs" />
     <Compile Include="ContextRefreshedEventArgs.cs" />
+    <Compile Include="Core\ColorConversion.cs" />
     <Compile Include="Core\IdProvider.cs" />
     <Compile Include="_DataSource\ItemSourceAdapter.cs" />
     <Compile Include="Core\ElementObserver.cs" />

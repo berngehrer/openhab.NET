@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openhab.net.rest", "openhab.net.rest\openhab.net.rest.csproj", "{7B5DEB49-9069-4A69-ADF2-47171B4639F8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openhab.net.rest.test", "openhab.net.rest.test\openhab.net.rest.test.csproj", "{A6925C71-DB52-4E64-8351-C0982FEED137}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openhab.net.rest.console", "openhab.net.rest.console\openhab.net.rest.console.csproj", "{D17BD635-5453-432D-902C-0B8F6D86E6A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App1", "App1\App1.csproj", "{DC160763-AFD5-490F-BF75-E03D4E3F8EC2}"
 EndProject
@@ -55,22 +53,6 @@ Global
 		{A6925C71-DB52-4E64-8351-C0982FEED137}.Release|x64.Build.0 = Release|Any CPU
 		{A6925C71-DB52-4E64-8351-C0982FEED137}.Release|x86.ActiveCfg = Release|Any CPU
 		{A6925C71-DB52-4E64-8351-C0982FEED137}.Release|x86.Build.0 = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|ARM.Build.0 = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|x64.Build.0 = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Debug|x86.Build.0 = Debug|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|ARM.ActiveCfg = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|ARM.Build.0 = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|x64.ActiveCfg = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|x64.Build.0 = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|x86.ActiveCfg = Release|Any CPU
-		{D17BD635-5453-432D-902C-0B8F6D86E6A6}.Release|x86.Build.0 = Release|Any CPU
 		{DC160763-AFD5-490F-BF75-E03D4E3F8EC2}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{DC160763-AFD5-490F-BF75-E03D4E3F8EC2}.Debug|Any CPU.Build.0 = Debug|x86
 		{DC160763-AFD5-490F-BF75-E03D4E3F8EC2}.Debug|Any CPU.Deploy.0 = Debug|x86

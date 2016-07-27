@@ -7,19 +7,15 @@ namespace openhab.net.rest.Items
     {
         internal NumberItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
-            Syncronize();
         }
 
         float _value;
         public new float Value
         {
             get { return _value; }
-            set
-            {
-                _value = value;
-                Update(string.Format("{0:#.00}", value));
-            }
+            set { _value = value; FromNative(value); }
         }
+
 
         protected override void Syncronize()
         {
@@ -27,5 +23,14 @@ namespace openhab.net.rest.Items
                 ValueParser.TryParse(base.Value, out _value);
             }
         }
+
+        public override void FromNative(object obj)
+        {
+            if (obj is float) {
+                Update(string.Format("{0:#.00}", obj));
+            }
+        }
+
+        public override object ToNative() => _value;
     }
 }

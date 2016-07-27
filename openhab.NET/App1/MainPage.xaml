@@ -1,7 +1,8 @@
-﻿<Page x:Class="App1.MainPage"
+﻿<Page xmlns:my2="using:Syncfusion.UI.Xaml.Charts"  xmlns:my1="using:Syncfusion.UI.Xaml.Controls.Input"  xmlns:my="using:Syncfusion.UI.Xaml.Controls.Media"  x:Class="App1.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:App1"
+    xmlns:converter="using:App1.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -10,9 +11,15 @@
         <local:MainViewModel />
     </Page.DataContext>
 
+    <Page.Resources>
+        <converter:ColorItemConverter x:Key="ColorConverter" />
+    </Page.Resources>
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel VerticalAlignment="Center">
             <ToggleSwitch IsOn="{Binding TvLed.Value, Mode=TwoWay}" HorizontalAlignment="Center" />
+            <my:SfColorPicker SelectedColor="{Binding TvLedColor.Value, Mode=TwoWay, Converter={StaticResource ColorConverter}}" />
+            <my1:SfDatePicker Value="{Binding LastUpdate.Value, Mode=OneWay}" HorizontalAlignment="Center" />
         </StackPanel>
     </Grid>
     

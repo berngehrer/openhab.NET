@@ -8,11 +8,18 @@ namespace openhab.net.rest.Items
         internal StringItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
         }
-
-        public new string Value
+        
+        public override void FromNative(object obj)
         {
-            get { return base.Value; }
-            set { Update(value); }
+            if (obj is string) {
+                Update(obj?.ToString());
+            }
+        }
+
+        public override object ToNative() => Value;
+
+        protected override void Syncronize()
+        {
         }
     }
 }

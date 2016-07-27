@@ -8,5 +8,16 @@ namespace openhab.net.rest.Items
         internal GroupItem(ItemObject original, IElementObserver observer) : base(original, observer)
         {
         }
+
+
+        protected override void Syncronize()
+        {
+        }
+
+        public override void FromNative(object obj)
+        {
+        }
+
+        public override object ToNative() => Value;
     }
 }
