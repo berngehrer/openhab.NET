@@ -8,17 +8,18 @@ namespace App1
 {
     public class ItemWrapper<T> : ObservableObject, IDisposable where T : OpenhabItem
     {
-        T _item;
         public ItemWrapper(T item)
         {
-            _item = item;
-            _item.Changed += Changed;
+            Item = item;
+            Item.Changed += Changed;
         }
         
+        public T Item { get; }
+
         public object Value
         {
-            get { return _item.ToNative(); }
-            set { _item.FromNative(value); }
+            get { return Item.ToNative(); }
+            set { Item.FromNative(value); }
         }
 
         async void RaiseChanged()
@@ -32,7 +33,7 @@ namespace App1
 
         public void Dispose()
         {
-            _item.Changed -= Changed;
+            Item.Changed -= Changed;
         }
 
         void Changed(object sender, EventArgs e) => RaiseChanged();
