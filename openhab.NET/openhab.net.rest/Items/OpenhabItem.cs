@@ -7,6 +7,7 @@ namespace openhab.net.rest.Items
 {
     public abstract class OpenhabItem : IOpenhabElement, IElementObservable
     {
+        string _value;
         IElementObserver _observer;
 
         public event EventHandler Changed;
@@ -15,7 +16,7 @@ namespace openhab.net.rest.Items
         internal OpenhabItem(ItemObject original, IElementObserver observer)
         {
             Name = original.Name;
-            Value = original.State;
+            _value = original.State;
             Type = original.ItemType;
             Link = new Uri(original.Link);
             (_observer = observer)?.Subscribe(this);
@@ -24,7 +25,7 @@ namespace openhab.net.rest.Items
         public Uri Link { get; }
         public string Name { get; }
         public ItemType Type { get; }
-        public string Value { get; private set; }
+        public string Value => _value;
 
         public bool IsInitialized
         {
@@ -38,7 +39,7 @@ namespace openhab.net.rest.Items
         {
             var other = element as OpenhabItem;
             if (!IsEqual(other)) {
-                Value = other.Value;
+                _value = other.Value;
                 Syncronize();
                 FireValueChanged();
             }
@@ -65,11 +66,22 @@ namespace openhab.net.rest.Items
         }
 
 
+        public void FromNative(object obj)
+        {
+            Update((bool)obj ? "ON" : "OFF");
+            Syncronize();
+        }
+
+        public object ToNative()
+        {
+            return IsInitialized && Value.Equals("ON");
+        }
+
         protected void Update(string value)
         {
             if (Value != value)
             {
-                Value = value;
+                _value = value;
                 FireValueChanged();
                 _observer?.Notify(this);
             }

@@ -6,47 +6,41 @@ using Windows.UI.Core;
 
 namespace App1
 {
-    public class ItemWrapper<T, U> : ObservableObject, IDisposable where T : OpenhabItem
+    public class ItemWrapper<T> : ObservableObject, IDisposable where T : OpenhabItem
     {
-        T _obj;
-        U _value;
-        bool perform = true;
-
-        public ItemWrapper(T obj)
+        T _item;
+        public ItemWrapper(T item)
         {
-            _obj = obj;
-            _obj.Changed += Update;
-            Update(null, null);
+            _item = item;
+            _item.Changed += Changed;
+        }
+        
+        public object Value
+        {
+            get { return _item.ToNative(); }
+            set { _item.FromNative(value); }
         }
 
-        async void Update(object o, EventArgs e)
+        async void RaiseChanged()
         {
-            if (perform)
-            {
-                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync
-                (
-                    CoreDispatcherPriority.Normal,
-                    () => _value = Convert.ChangeType(((dynamic)_obj).Value, typeof(U))
-                );
-                RaisePropertyChanged(() => Value);
-            }
-        }
-
-        public U Value
-        {
-            get { return _value; }
-            set
-            {
-                perform = false;
-                Set(ref _value, value);
-                ((dynamic)_obj).Value = value;
-                perform = true;
-            }
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync
+            (
+                CoreDispatcherPriority.Normal,
+                () => RaisePropertyChanged(() => Value)
+            );
         }
 
         public void Dispose()
         {
-            _obj.Changed -= Update;
+            _item.Changed -= Changed;
+        }
+
+        void Changed(object sender, EventArgs e) => RaiseChanged();
+
+
+        public static implicit operator ItemWrapper<T>(OpenhabItem item)
+        {
+            return new ItemWrapper<T>((T)item);
         }
     }
 }

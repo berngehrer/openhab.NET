@@ -21,24 +21,14 @@ namespace App1
 
         async void LoadItem()
         {
-            var item = await _context.GetByName<SwitchItem>("MQTT_TVLED_POW");
-            TvLed = new ItemWrapper<SwitchItem, bool>(item);
-            //var item2 = await _context.GetByName<NumberItem>("Weather_Temperature");
-            //Temperature = new ItemWrapper<OpenhabItem, string>(item2);
+            TvLed = await _context.GetByName<SwitchItem>("MQTT_TVLED_POW");
         }
 
-        ItemWrapper<SwitchItem, bool> _led;
-        public ItemWrapper<SwitchItem, bool> TvLed
+        ItemWrapper<SwitchItem> _led;
+        public ItemWrapper<SwitchItem> TvLed
         {
             get { return _led; }
             set { Set(ref _led, value); }
-        }
-
-        ItemWrapper<OpenhabItem, string> _temp;
-        public ItemWrapper<OpenhabItem, string> Temperature
-        {
-            get { return _temp; }
-            set { Set(ref _temp, value); }
         }
 
         public void Dispose()
