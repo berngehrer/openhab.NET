@@ -19,7 +19,6 @@
         <StackPanel VerticalAlignment="Center">
             <ToggleSwitch IsOn="{Binding TvLed.Value, Mode=TwoWay}" HorizontalAlignment="Center" />
             <my:SfColorPicker SelectedColor="{Binding TvLedColor.Value, Mode=TwoWay, Converter={StaticResource ColorConverter}}" />
-            <my1:SfDatePicker Value="{Binding LastUpdate.Value, Mode=OneWay}" HorizontalAlignment="Center" />
         </StackPanel>
     </Grid>
     

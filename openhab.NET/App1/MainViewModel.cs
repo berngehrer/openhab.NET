@@ -11,11 +11,7 @@ namespace App1
 
         public MainViewModel()
         {
-            var settings = new OpenhabSettings("192.168.178.69");
-            var strategy = new UpdateStrategy(TimeSpan.FromSeconds(3));
-
-            _context = new ItemContext(settings, strategy);
-
+            _context = new ItemContext("homepi"); 
             LoadItem();
         }
 
@@ -23,7 +19,6 @@ namespace App1
         {
             TvLed = await _context.GetByName<SwitchItem>("MQTT_TVLED_POW");
             TvLedColor = await _context.GetByName<ColorItem>("MQTT_TVLED_COLOR");
-            LastUpdate = await _context.GetByName<DateTimeItem>("Astro_Moon_New");
         }
 
         ItemWrapper<SwitchItem> _led;
@@ -39,14 +34,7 @@ namespace App1
             get { return _ledColor; }
             set { Set(ref _ledColor, value); }
         }
-
-        ItemWrapper<DateTimeItem> _updateDate;
-        public ItemWrapper<DateTimeItem> LastUpdate
-        {
-            get { return _updateDate; }
-            set { Set(ref _updateDate, value); }
-        }
-
+        
         public void Dispose()
         {
             _context.Dispose();

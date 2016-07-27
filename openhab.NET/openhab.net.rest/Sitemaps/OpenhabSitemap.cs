@@ -1,78 +1,67 @@
-﻿using openhab.net.rest.Json;
+﻿using openhab.net.rest.Core;
+using openhab.net.rest.Json;
 using System;
-using System.ComponentModel;
 
 namespace openhab.net.rest.Sitemaps
 {
-    public class OpenhabSitemap : IOpenhabElement, IEquatable<OpenhabSitemap>
+    public class OpenhabSitemap : IOpenhabElement, IElementObservable
     {
-        internal OpenhabSitemap(SitemapObject original)
+        IElementObserver _observer;
+
+        public event EventHandler Changed;
+
+
+        internal OpenhabSitemap(SitemapObject original, IElementObserver observer)
         {
             Name = original.Name;
             Description = original.Label;
             Link = new Uri(original.Link);
+            (_observer = observer)?.Subscribe(this);
+            Syncronize();
         }
 
         public Uri Link { get; }
         public string Name { get; }
         public string Description { get; }
-
-        public string Value
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool HasChanged
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public static bool operator ==(OpenhabSitemap a, OpenhabSitemap b)
-        {
-            return a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
-        }
-
-        public static bool operator !=(OpenhabSitemap a, OpenhabSitemap b)
-        {
-            return !a.Name.Equals(b.Name, StringComparison.CurrentCultureIgnoreCase);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event EventHandler Changed;
-
-        public bool Equals(OpenhabSitemap other) => this == other;
-
-        public override int GetHashCode() => Name.GetHashCode();
-
+        
         public override string ToString() => Description;
+
+
+        public bool IsEqual(IOpenhabElement element)
+        {
+            return Equals(element as OpenhabSitemap);
+        }
 
         public override bool Equals(object obj)
         {
             var other = obj as OpenhabSitemap;
-            if (other != null)
-                return Equals(other);
-            return base.Equals(obj);
+            return other?.Name == Name;
         }
 
-        public void Reset()
+        public override int GetHashCode()
         {
-            throw new NotImplementedException();
+            return Name.GetHashCode();
         }
 
-        public bool ShadowUpdate(IOpenhabElement element)
+        protected void FireValueChanged()
         {
-            throw new NotImplementedException();
+            Syncronize();
+            Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        public bool IsEqual(IOpenhabElement element)
+        /// <summary>
+        /// Update from Observer
+        /// </summary>
+        public void OnNotify(IOpenhabElement element)
         {
-            throw new NotImplementedException();
+            var other = element as OpenhabSitemap;
+            if (!IsEqual(other)) {
+                FireValueChanged();
+            }
+        }
+
+        protected void Syncronize()
+        {
         }
     }
 }

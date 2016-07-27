@@ -9,12 +9,17 @@ namespace openhab.net.rest
         {
         }
 
-        public ItemContext(string host, int port = 8080, UpdateStrategy stategy = null)
+        public ItemContext(OpenhabSettings settings)
+            : base(settings, UpdateStrategy.Default)
+        {
+        }
+
+        private ItemContext(string host, int port = 8080, UpdateStrategy stategy = null)
             : this(new OpenhabSettings(host, port), stategy)
         {
         }
 
-        public ItemContext(OpenhabSettings settings, UpdateStrategy strategy = null) 
+        private ItemContext(OpenhabSettings settings, UpdateStrategy strategy = null) 
             : base(settings, strategy ?? UpdateStrategy.Default)
         {
         }

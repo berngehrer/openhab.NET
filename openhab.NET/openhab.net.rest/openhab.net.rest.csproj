@@ -38,6 +38,7 @@
     <Compile Include="ContextRefreshedEventArgs.cs" />
     <Compile Include="Core\ColorConversion.cs" />
     <Compile Include="Core\IdProvider.cs" />
+    <Compile Include="SitemapContext.cs" />
     <Compile Include="_DataSource\ItemSourceAdapter.cs" />
     <Compile Include="Core\ElementObserver.cs" />
     <Compile Include="Http\PoolingSession.cs" />
@@ -67,10 +68,10 @@
     <Compile Include="OpenhabSettings.cs" />
     <Compile Include="Items\ItemType.cs" />
     <Compile Include="Http\MIMEType.cs" />
-    <Compile Include="Docs\OpenhabSitemapClient.cs" />
     <Compile Include="Sitemaps\OpenhabSitemap.cs" />
     <Compile Include="Core\EndlessDelayTimer.cs" />
     <Compile Include="UpdateStrategy.cs" />
+    <Compile Include="_DataSource\SitemapSourceAdapter.cs" />
     <Compile Include="_Extensions\AttributeExtensions.cs" />
     <Compile Include="_Extensions\EnumerableExtensions.cs" />
     <Compile Include="_Extensions\FieldValueExtensions.cs" />
@@ -95,9 +96,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Docs\Notes.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

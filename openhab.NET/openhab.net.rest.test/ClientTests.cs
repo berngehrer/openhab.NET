@@ -42,7 +42,7 @@ namespace openhab.net.rest.test
             Task.Run(async () =>
             {
                 var strategy = new UpdateStrategy(realtime: true);
-                using (var context = new ItemContext(Settings, strategy))
+                using (var context = new ItemContext(Settings)) //, strategy))
                 {
                     var item = await context.GetByName(TestItem);
                     Assert.IsNotNull(item);

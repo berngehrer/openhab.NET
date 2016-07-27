@@ -4,7 +4,7 @@ namespace openhab.net.rest
 {
     public sealed class UpdateStrategy
     {
-        public static UpdateStrategy Default => new UpdateStrategy();
+        public static UpdateStrategy Default => new UpdateStrategy( TimeSpan.FromSeconds(3) );
 
         public UpdateStrategy()
         {
